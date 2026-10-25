@@ -78,7 +78,7 @@
     $('mangoGameFrame').src = path;
     $('mangoPlayer').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  $('playKartArena').onclick = () => play('Mango Kart Arena','./mango-kart-arena.html?v=arena-1');
+  $('playKartArena').onclick = () => play('Mango Kart Arena','./mango-kart-arena.html?v=arena-2');
   $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=smooth-10');
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
   $('playRacing').onclick = () => play('PMNDRS Racing','https://racing.pmnd.rs/');
