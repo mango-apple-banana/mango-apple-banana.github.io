@@ -33,6 +33,7 @@
     <h1>🎮 Mango Games</h1>
     <p class="muted">Choose a game. These games are best played on a computer with a keyboard and mouse.</p>
     <div class="mango-game-grid">
+      <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#215260,#e7ac56)" aria-hidden="true">🏝️</div><h2>Mango Circuit</h2><p>A Mango original. Race three laps through a low-poly coastal circuit with sweeping bends, hills, boost, and your own best-lap record. Keyboard and touch controls.</p><button id="playCircuit" class="primary">Play Mango Circuit</button><p class="small">Original game · Plays right here</p></article>
       <article class="mango-game-card"><div class="mango-game-art">🎯</div><h2>Void Runner</h2><p>Survive waves in a neon 3D arena. Move with WASD, aim with your mouse, and click to fire.</p><button id="playVoid" class="primary">Play Void Runner</button></article>
       <article class="mango-game-card"><div class="mango-game-art racing">🏎️</div><h2>PMNDRS Racing</h2><p>Drive a 3D car around a desert track. Use WASD or arrow keys, Shift for boost, and R to reset.</p><button id="playRacing" class="primary">Play Racing</button></article>
       <article class="mango-game-card"><div class="mango-game-art polytrack" aria-hidden="true">🏁</div><h2>PolyTrack</h2><p>Race through loops, jumps, and custom tracks in Kodub’s low-poly racing game. Opens the official game on CrazyGames in a new tab.</p><a id="playPolytrack" class="mango-game-link" href="https://www.crazygames.com/game/polytrack" target="_blank" rel="noopener noreferrer">Play PolyTrack ↗</a><p class="small">By Kodub · Official game link</p></article>
@@ -42,7 +43,7 @@
       <p id="mangoGameStatus" role="status"></p>
       <iframe id="mangoGameFrame" title="Mango game player" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
     </div>
-    <p class="small">Void Runner and Racing run inside Mango. PolyTrack opens its official game page in a new tab. Internet is required. <a href="https://github.com/mheerspink75/void-runner" target="_blank" rel="noopener noreferrer">Void Runner source / MIT license</a> · <a href="https://github.com/pmndrs/racing-game" target="_blank" rel="noopener noreferrer">Racing source / licenses</a></p>
+    <p class="small">Mango Circuit is an original game made for Mango. Void Runner and Racing run from their creators’ websites inside Mango. PolyTrack opens its official game page in a new tab. <a href="https://github.com/mheerspink75/void-runner" target="_blank" rel="noopener noreferrer">Void Runner source / MIT license</a> · <a href="https://github.com/pmndrs/racing-game" target="_blank" rel="noopener noreferrer">Racing source / licenses</a></p>
   `;
   document.querySelector('header').after(page);
   const $ = id => document.getElementById(id);
@@ -78,6 +79,7 @@
     $('mangoGameFrame').src = path;
     $('mangoPlayer').scrollIntoView({behavior:'smooth',block:'start'});
   }
+  $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html');
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
   $('playRacing').onclick = () => play('PMNDRS Racing','https://racing.pmnd.rs/');
   $('mangoCloseGame').onclick = closeGame;
