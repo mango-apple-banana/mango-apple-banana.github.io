@@ -177,6 +177,10 @@ aside h2{margin:0;font-size:16px}
   line-height:1.5;
 }
 #loadAI{align-self:flex-start}
+.assistant-choices{display:flex;flex-direction:column;gap:6px}
+.assistant-choices button{text-align:left;white-space:normal;overflow-wrap:anywhere}
+.assistant-choices button[aria-pressed="true"]{background:#ffbe55;color:#171717;font-weight:650}
+#aiAssistantDescription{margin:8px 0 0;font-size:13px;color:#aaa}
 #myId{
   display:block;
   overflow-wrap:anywhere;
@@ -251,6 +255,13 @@ label input,label select{width:100%}
 
 <section id="ai" class="layout" hidden>
   <aside>
+    <h2>Choose an AI</h2>
+    <div class="assistant-choices" role="group" aria-label="Choose an AI assistant">
+      <button id="assistant-mango" aria-pressed="true">🥭 Mango</button>
+      <button id="assistant-apple" aria-pressed="false">🍎 Apple</button>
+      <button id="assistant-banana" aria-pressed="false">🍌 Banana</button>
+      <button id="assistant-mix" aria-pressed="false">🥭🍌🍎 Mango, Banana, Apple</button>
+    </div>
     <button id="newChat" disabled>＋ New chat</button>
     <div id="aiList" class="list"></div>
     <p class="small">
@@ -260,7 +271,8 @@ label input,label select{width:100%}
   </aside>
 
   <main class="workspace">
-    <h1>🥭 Mango AI</h1>
+    <h1 id="aiHeading">🥭 Mango</h1>
+    <p id="aiAssistantDescription">Friendly, clear answers for everyday questions.</p>
     <p id="aiStatus" class="status" role="status">Sign in to begin.</p>
     <button id="loadAI" hidden disabled>Retry loading AI</button>
 
@@ -569,6 +581,9 @@ function controls() {
     $(id).disabled = disabled;
   };
 
+  for (const id of ["mango", "apple", "banana", "mix"]) {
+    set("assistant-" + id, thinking || deleting);
+  }
   set("newChat", !ready || thinking);
   set("loadAI", !ready || loading);
   $("loadAI").hidden = !me || !aiLoadFailed || loading || !!engine;
@@ -761,8 +776,67 @@ for (const name of ["home", "ai", "friends", "school", "games"]) {
 
 $("openAI").onclick = () => showTab("ai");
 
-// AI chat storage.
-const chatKey = () => me ? "mango-chats-v2-" + me.uid : null;
+// Four assistant styles share the local engine; each has separate chats.
+const assistants = {
+  mango: {
+    name: "Mango",
+    emoji: "🥭",
+    greeting: "What can I help with?",
+    description: "Friendly, clear answers for everyday questions.",
+    prompt: "You are Mango, a friendly assistant. Give clear, short answers. Say when you do not know something."
+  },
+  apple: {
+    name: "Apple",
+    emoji: "🍎",
+    greeting: "What would you like to learn?",
+    description: "Learn something with simple steps and examples.",
+    prompt: "You are Apple, a patient learning assistant. Explain in simple steps with short examples. Help the user understand. Say when you do not know something."
+  },
+  banana: {
+    name: "Banana",
+    emoji: "🍌",
+    greeting: "What shall we create?",
+    description: "Brainstorm stories, game ideas, and creative projects.",
+    prompt: "You are Banana, a playful creative assistant. Help with stories, game ideas and brainstorming. Be kind, clear and concise. Say when you do not know something."
+  },
+  mix: {
+    name: "Mango, Banana, Apple",
+    emoji: "🥭🍌🍎",
+    greeting: "A little of everything.",
+    description: "Friendly answers, clear steps, and creative ideas together.",
+    prompt: "You are Mango, Banana, Apple, one assistant combining Mango's friendliness, Apple's clear teaching and Banana's creativity. Give one helpful concise answer. Do not pretend to be three separate models. Say when you do not know something."
+  }
+};
+let activeAssistant = "mango";
+const assistant = () => assistants[activeAssistant];
+const assistantLabel = () => assistant().emoji + " " + assistant().name;
+function renderAssistantChoice() {
+  $("aiHeading").textContent = assistantLabel();
+  $("aiAssistantDescription").textContent = assistant().description;
+  for (const id of Object.keys(assistants)) {
+    $("assistant-" + id).setAttribute("aria-pressed", String(id === activeAssistant));
+  }
+}
+for (const id of Object.keys(assistants)) {
+  $("assistant-" + id).onclick = () => {
+    if (thinking || deleting || id === activeAssistant) return;
+    saveChats();
+    activeAssistant = id;
+    readChats();
+    $("aiInput").value = "";
+    renderAssistantChoice();
+    renderAIList();
+    renderAI();
+    controls();
+    if (tab === "ai") startAI();
+  };
+}
+renderAssistantChoice();
+
+// Keep the original Mango history key for existing accounts.
+const chatKey = (id = activeAssistant) => me
+  ? "mango-chats-v2-" + me.uid + (id === "mango" ? "" : "-" + id)
+  : null;
 
 const fresh = () => ({
   id: crypto.randomUUID(),
@@ -808,7 +882,7 @@ function importOld() {
     if (!accepted) return;
 
     const saved = JSON.parse(
-      localStorage.getItem(chatKey()) || "[]"
+      localStorage.getItem(chatKey("mango")) || "[]"
     );
 
     if (!Array.isArray(saved)) throw Error("Invalid history");
@@ -829,7 +903,7 @@ function importOld() {
       }
     }
 
-    localStorage.setItem(chatKey(), JSON.stringify(merged));
+    localStorage.setItem(chatKey("mango"), JSON.stringify(merged));
     localStorage.setItem("mango-old-chats-imported-by", me.uid);
   } catch {
     alert("Import failed. Your original chats were kept.");
@@ -869,8 +943,8 @@ function renderAI() {
   if (!chat?.messages.length) {
     welcome(
       "aiMessages",
-      me ? "What can I help with?" : "Welcome to Mango AI",
-      me ? "Ask a question or start a new chat." : "Sign in to begin."
+      me ? assistant().greeting : "Welcome to " + assistant().name,
+      me ? assistant().description : "Sign in to begin."
     );
     return;
   }
@@ -878,7 +952,7 @@ function renderAI() {
   for (const message of chat.messages) {
     bubble(
       "aiMessages",
-      message.role === "user" ? "You" : "🥭 Mango",
+      message.role === "user" ? "You" : assistantLabel(),
       message.content,
       message.role === "user"
     );
@@ -1003,9 +1077,7 @@ $("aiForm").onsubmit = async event => {
   const messages = [
     {
       role: "system",
-      content:
-        "You are Mango, a friendly assistant. Give clear, short answers. " +
-        "Say when you do not know something."
+      content: assistant().prompt
     },
     ...chat.messages.slice(-6),
     { role: "user", content: text }
@@ -1019,7 +1091,7 @@ $("aiForm").onsubmit = async event => {
   if (!chat.messages.length) $("aiMessages").replaceChildren();
 
   bubble("aiMessages", "You", text, true);
-  const output = bubble("aiMessages", "🥭 Mango", "Thinking…", false);
+  const output = bubble("aiMessages", assistantLabel(), "Thinking…", false);
   $("aiStatus").textContent = "Thinking…";
 
   try {
@@ -1901,7 +1973,9 @@ $("deleteForm").onsubmit = async event => {
     let localFailed = false;
 
     try {
-      localStorage.removeItem("mango-chats-v2-" + uid);
+      for (const id of Object.keys(assistants)) {
+        localStorage.removeItem("mango-chats-v2-" + uid + (id === "mango" ? "" : "-" + id));
+      }
 
       if (
         localStorage.getItem("mango-old-chats-imported-by") === uid
