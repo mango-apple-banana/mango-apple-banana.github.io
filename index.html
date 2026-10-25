@@ -262,7 +262,7 @@ label input,label select{width:100%}
   <main class="workspace">
     <h1>🥭 Mango AI</h1>
     <p id="aiStatus" class="status" role="status">Sign in to begin.</p>
-    <button id="loadAI" disabled>Load AI</button>
+    <button id="loadAI" hidden disabled>Retry loading AI</button>
 
     <div id="aiMessages" class="messages" role="log"
       aria-label="AI conversation" aria-live="polite"></div>
@@ -501,6 +501,7 @@ let tab = "home";
 
 let engine = null;
 let loading = false;
+let aiLoadFailed = false;
 let thinking = false;
 let chats = [];
 let activeId = null;
@@ -570,7 +571,7 @@ function controls() {
 
   set("newChat", !ready || thinking);
   set("loadAI", !ready || loading);
-  $("loadAI").hidden = !!engine;
+  $("loadAI").hidden = !me || !aiLoadFailed || loading || !!engine;
 
   set("aiInput", !ready || !engine || thinking);
   set("aiSend", !ready || !engine || thinking);
@@ -743,6 +744,8 @@ function showTab(value) {
       button.setAttribute("aria-pressed", String(name === value));
     }
   }
+
+  if (value === "ai") startAI();
 
   if (value === "school") {
     openSchool();
@@ -942,8 +945,10 @@ $("newChat").onclick = () => {
   renderAI();
 };
 
-$("loadAI").onclick = async () => {
-  if (!me || loading || engine || deleting) return;
+async function startAI(retry = false) {
+  if (!me || loading || engine || deleting || (aiLoadFailed && !retry)) return;
+
+  aiLoadFailed = false;
 
   loading = true;
   controls();
@@ -973,13 +978,16 @@ $("loadAI").onclick = async () => {
 
     if (me) $("aiStatus").textContent = "Ready!";
   } catch (error) {
+    aiLoadFailed = true;
     if (me) fail("aiStatus", error);
     $("loadAI").textContent = "Retry loading AI";
   } finally {
     loading = false;
     controls();
   }
-};
+}
+
+$("loadAI").onclick = () => startAI(true);
 
 $("aiForm").onsubmit = async event => {
   event.preventDefault();
@@ -2030,12 +2038,16 @@ try {
       ? "Sign in to begin."
       : engine
         ? "Ready!"
-        : "Click Load AI. The first download is several hundred MB. " +
+        : loading
+          ? "Starting Mango AI automatically…"
+          : "Mango AI starts automatically when you open the AI tab. " +
+          "The first download is several hundred MB. " +
           "A WebGPU-compatible browser and supported graphics hardware " +
           "are required.";
 
     requiredFields();
     controls();
+    if (me && tab === "ai") startAI();
 
     if (me && !deleting) {
       const uid = me.uid;
