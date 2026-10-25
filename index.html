@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mango</title>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#171717">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mango">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+<script src="./mango-install.js" defer></script>
+<script src="./mango-games.js" defer></script>
+
+<style>
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  margin:0;
+  background:#212121;
+  color:#ececec;
+  font:16px system-ui,-apple-system,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{
+  padding:11px 14px;
+  border:0;
+  border-radius:10px;
+  background:#343434;
+  color:#eee;
+  cursor:pointer;
+}
+button:hover{background:#484848}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{
+  min-width:0;
+  padding:12px;
+  border:1px solid #555;
+  border-radius:10px;
+  background:#303030;
+  color:white;
+}
+textarea{resize:vertical;width:100%}
+button:focus-visible,input:focus-visible,
+select:focus-visible,textarea:focus-visible{
+  outline:2px solid #ffbe55;
+  outline-offset:2px;
+}
+header{
+  min-height:68px;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:12px 20px;
+  background:#171717;
+  border-bottom:1px solid #333;
+}
+.brand{
+  margin-right:auto;
+  color:#ffbe55;
+  font-size:23px;
+  font-weight:750;
+}
+header button[aria-pressed=true]{background:#505050}
+.primary{
+  background:#ffbe55;
+  color:#171717;
+  font-weight:650;
+}
+.danger{background:#792d2d}
+#home{text-align:center;padding:15vh 20px}
+#home h1{color:#ffbe55;font-size:clamp(36px,7vw,64px)}
+.muted,#home p{color:#aaa}
+.layout{
+  display:grid;
+  grid-template-columns:225px minmax(0,1fr);
+  height:calc(100dvh - 90px);
+}
+aside{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  min-height:0;
+  padding:18px 12px;
+  background:#171717;
+  border-right:1px solid #333;
+}
+aside h2{margin:0;font-size:16px}
+.list{flex:1;min-height:0;overflow-y:auto}
+.row{
+  display:flex;
+  align-items:center;
+  border-radius:10px;
+  margin-bottom:5px;
+}
+.row.active{background:#383838}
+.title{
+  flex:1;
+  min-width:0;
+  text-align:left;
+  background:transparent;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.remove{background:transparent;color:#aaa;padding:8px}
+.small{font-size:12px;line-height:1.6;color:#aaa}
+.workspace{
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  min-width:0;
+  width:100%;
+  max-width:1000px;
+  margin:auto;
+  height:100%;
+  padding:22px 28px 12px;
+}
+.workspace h1{
+  margin:0;
+  font-size:22px;
+  overflow-wrap:anywhere;
+}
+.status{
+  font-size:13px;
+  color:#bbb;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+#aiStatus{max-height:85px;overflow-y:auto}
+.messages{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding:20px 4px;
+  scrollbar-width:thin;
+}
+.welcome{text-align:center;padding:8vh 10px 20px}
+.welcome h2{font-size:clamp(24px,4vw,34px)}
+.bubble{
+  width:fit-content;
+  max-width:92%;
+  margin-bottom:24px;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+.bubble.mine{
+  margin-left:auto;
+  background:#303030;
+  padding:12px 18px;
+  border-radius:22px;
+}
+.name{color:#aaa;font-size:12px;margin-bottom:5px}
+.text{white-space:pre-wrap;font-size:15px}
+.composer{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  background:#303030;
+  border:1px solid #484848;
+  border-radius:26px;
+}
+.composer input{
+  flex:1;
+  border:0;
+  background:transparent;
+}
+.composer button{background:#ececec;color:#171717}
+.disclaimer{
+  text-align:center;
+  font-size:11px;
+  color:#999;
+  line-height:1.5;
+}
+#loadAI{align-self:flex-start}
+#myId{
+  display:block;
+  overflow-wrap:anywhere;
+  color:#ffbe55;
+}
+#friendId{width:100%}
+#school{height:calc(100dvh - 90px)}
+dialog{
+  width:min(470px,94vw);
+  max-height:90dvh;
+  overflow-y:auto;
+  background:#212121;
+  color:#eee;
+  border:1px solid #555;
+  border-radius:20px;
+  padding:26px;
+}
+dialog::backdrop{background:#000b}
+.close{float:right;padding:5px 10px}
+.stack{display:flex;flex-direction:column;gap:14px}
+label{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  font-size:14px;
+}
+label input,label select{width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:9px}
+#accountInfo{overflow-wrap:anywhere}
+#switchMode{
+  background:transparent;
+  text-decoration:underline;
+  padding-left:0;
+}
+@media(max-width:700px){
+  header{padding:10px;gap:5px}
+  .brand{font-size:18px}
+  header button{padding:10px 7px;font-size:12px}
+  .layout{
+    grid-template-columns:125px minmax(0,1fr);
+    height:calc(100dvh - 145px);
+  }
+  #school{height:calc(100dvh - 145px)}
+  aside{padding:12px 7px}
+  aside button{padding:10px 6px;font-size:12px}
+  .workspace{padding:16px 10px 10px}
+  .composer{flex-wrap:wrap}
+  .composer input{flex-basis:100%;width:100%}
+  .composer button{margin-left:auto}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">🥭 Mango</div>
+  <button id="homeTab" aria-pressed="true">Home</button>
+  <button id="aiTab" aria-pressed="false">🤖 AI</button>
+  <button id="friendsTab" aria-pressed="false">💬 Friends</button>
+  <button id="schoolTab" aria-pressed="false">🏫 School</button>
+  <button id="suggestTab">💡 Suggest</button>
+  <button id="accountButton" class="primary" disabled>Connecting…</button>
+</header>
+
+<section id="home">
+  <h1>🥭 Welcome to Mango</h1>
+  <p>Chat with AI. Connect with friends and your school.</p>
+  <p>Open the Games tab to play.</p>
+  <button id="openAI" class="primary">Open Mango AI →</button>
+</section>
+
+<section id="ai" class="layout" hidden>
+  <aside>
+    <button id="newChat" disabled>＋ New chat</button>
+    <div id="aiList" class="list"></div>
+    <p class="small">
+      AI chats are saved for your account in this browser only.
+      Clearing site data removes them.
+    </p>
+  </aside>
+
+  <main class="workspace">
+    <h1>🥭 Mango AI</h1>
+    <p id="aiStatus" class="status" role="status">Sign in to begin.</p>
+    <button id="loadAI" disabled>Load AI</button>
+
+    <div id="aiMessages" class="messages" role="log"
+      aria-label="AI conversation" aria-live="polite"></div>
+
+    <form id="aiForm" class="composer">
+      <input id="aiInput" placeholder="Message Mango…"
+        aria-label="Message Mango" maxlength="2000" required disabled>
+      <button id="aiSend" disabled>Send ↑</button>
+    </form>
+
+    <p class="disclaimer">
+      Mango AI can make mistakes. Check important information.
+    </p>
+  </main>
+</section>
+
+<section id="friends" class="layout" hidden>
+  <aside>
+    <h2>💬 Friends</h2>
+    <div class="small">
+      Your Mango ID:
+      <strong id="myId">Sign in first</strong>
+    </div>
+
+    <button id="copyId" disabled>Copy my ID</button>
+
+    <input id="friendId" placeholder="Friend's username"
+      aria-label="Friend's username" maxlength="21">
+
+    <button id="startFriend" disabled>Start chat</button>
+    <div id="friendList" class="list"></div>
+
+    <p class="small">
+      Share your username directly with your friend.
+    </p>
+  </aside>
+
+  <main class="workspace">
+    <h1 id="friendHeading">💬 Friends</h1>
+    <p id="friendStatus" class="status" role="status">Sign in to begin.</p>
+
+    <div id="friendMessages" class="messages" role="log"
+      aria-label="Friend conversation" aria-live="polite"></div>
+
+    <form id="friendForm" class="composer">
+      <input id="friendInput" placeholder="Message your friend…"
+        aria-label="Message your friend" maxlength="2000" required disabled>
+      <button id="friendSend" disabled>Send ↑</button>
+    </form>
+
+    <p class="disclaimer">
+      Messages are stored in Firebase, not end-to-end encrypted.
+    </p>
+  </main>
+</section>
+
+<section id="school" hidden>
+  <main class="workspace">
+    <h1 id="schoolHeading">🏫 School Chat</h1>
+    <p id="schoolStatus" class="status" role="status">
+      Sign in and finish your profile to join.
+    </p>
+
+    <div id="schoolMessages" class="messages" role="log"
+      aria-label="School conversation" aria-live="polite"></div>
+
+    <form id="schoolForm" class="composer">
+      <input id="schoolInput" placeholder="Message your school…"
+        aria-label="Message your school" maxlength="2000" required disabled>
+      <button id="schoolSend" disabled>Send ↑</button>
+    </form>
+
+    <p class="disclaimer">
+      Everyone registered under this school can read these messages.
+      School membership is self-selected and not verified.
+      Messages are not end-to-end encrypted.
+    </p>
+  </main>
+</section>
+
+<dialog id="accountDialog" aria-labelledby="accountHeading">
+  <button id="closeAccount" class="close" aria-label="Close">×</button>
+  <h2 id="accountHeading">Sign in to Mango</h2>
+
+  <form id="accountForm" class="stack">
+    <label>
+      Email
+      <input id="email" type="email" autocomplete="username" required>
+    </label>
+
+    <label>
+      Password
+      <input id="password" type="password"
+        autocomplete="current-password" required>
+    </label>
+
+    <div id="signupFields" class="stack" hidden>
+      <label>
+        Username / Mango ID
+        <input id="signupUsername" minlength="3" maxlength="20"
+          pattern="[A-Za-z0-9_]{3,20}" autocomplete="nickname"
+          placeholder="For example: marcocow">
+      </label>
+
+      <p class="small">
+        Choose a unique username: 3–20 letters, numbers, or underscores.
+        Usernames use lowercase letters.
+      </p>
+
+      <div id="signupLocation" class="stack"></div>
+
+      <p class="small">
+        Your selected school determines your School Chat.
+        Room members see your username and messages.
+        Your city and email aren't shown to them.
+      </p>
+    </div>
+
+    <div class="actions">
+      <button id="submitAccount" class="primary">Sign in</button>
+      <button id="reset" type="button">Reset password</button>
+    </div>
+
+    <button id="switchMode" type="button">
+      New here? Create an account
+    </button>
+  </form>
+
+  <div id="accountPanel" hidden>
+    <p id="accountInfo"></p>
+
+    <form id="profileForm" class="stack" hidden>
+      <p class="small">
+        Finish your Mango ID. Older accounts can register a username here.
+      </p>
+
+      <label>
+        Username / Mango ID
+        <input id="profileUsername" minlength="3" maxlength="20"
+          pattern="[A-Za-z0-9_]{3,20}" required>
+      </label>
+
+      <div id="profileLocation" class="stack"></div>
+      <button id="saveProfile" class="primary">Save Mango ID</button>
+    </form>
+
+    <p id="savedProfile"></p>
+
+    <div class="actions">
+      <button id="logout">Sign out</button>
+      <button id="openDelete" class="danger">Delete account</button>
+    </div>
+  </div>
+
+  <p id="accountStatus" class="status" role="status">Connecting…</p>
+</dialog>
+
+<dialog id="suggestDialog" aria-labelledby="suggestHeading">
+  <button id="closeSuggest" class="close" aria-label="Close">×</button>
+  <h2 id="suggestHeading">💡 Suggestion Box</h2>
+
+  <p class="small">
+    Suggest a game, request a feature, or report a problem.
+    Your suggestion is saved privately, and Mango tries to email
+    it with your username to the owner.
+  </p>
+
+  <form id="suggestForm" class="stack">
+    <label>
+      Category
+      <select id="suggestCategory">
+        <option value="game">🎮 Suggest a game</option>
+        <option value="feature">✨ New feature</option>
+        <option value="bug">🐛 Report a problem</option>
+        <option value="other">💬 Other</option>
+      </select>
+    </label>
+
+    <label>
+      Your suggestion
+      <textarea id="suggestText" rows="5" minlength="10"
+        maxlength="2000" placeholder="What would make Mango better?"
+        required></textarea>
+    </label>
+
+    <button id="suggestSend" class="primary">Send suggestion</button>
+  </form>
+
+  <p id="suggestStatus" class="status" role="status"></p>
+</dialog>
+
+<dialog id="deleteDialog" aria-labelledby="deleteHeading">
+  <h2 id="deleteHeading">Delete your Mango account?</h2>
+
+  <p class="small">
+    This removes your login, private profile, and AI chats saved for this
+    account in this browser. Friend messages, school messages, and submitted
+    suggestions remain. Your username stays reserved. Copies on other
+    devices are not removed.
+  </p>
+
+  <form id="deleteForm" class="stack">
+    <label>
+      Confirm your password
+      <input id="deletePassword" type="password"
+        autocomplete="current-password" required>
+    </label>
+
+    <label>
+      Type DELETE
+      <input id="deleteConfirm" autocomplete="off" required>
+    </label>
+
+    <div class="actions">
+      <button id="deleteSubmit" class="danger">
+        Permanently delete account
+      </button>
+      <button id="deleteCancel" type="button">Cancel</button>
+    </div>
+  </form>
+
+  <p id="deleteStatus" class="status" role="status"></p>
+</dialog>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+
+let auth, A, db, F;
+let me = null;
+let myName = null;
+let profileTicket = 0;
+let signup = false;
+let accountBusy = false;
+let deleting = false;
+let tab = "home";
+
+let engine = null;
+let loading = false;
+let thinking = false;
+let chats = [];
+let activeId = null;
+
+let epoch = 0;
+let roomVersion = 0;
+let room = null;
+let friendSending = false;
+let opening = false;
+let friendRooms = [];
+let stopRooms = null;
+let stopMessages = null;
+
+let schoolEpoch = 0;
+let schoolRoom = null;
+let schoolReady = false;
+let schoolSending = false;
+let stopSchool = null;
+
+let suggestSending = false;
+
+const normalize = s => s.trim().replace(/^@/, "").toLowerCase();
+const validName = s => /^[a-z0-9_]{3,20}$/.test(s);
+const fail = (id, e) => {
+  $(id).textContent = e.message || String(e);
+};
+
+function welcome(id, title, text) {
+  const d = document.createElement("div");
+  d.className = "welcome";
+
+  const h = document.createElement("h2");
+  h.textContent = title;
+
+  const p = document.createElement("p");
+  p.className = "muted";
+  p.textContent = text;
+
+  d.append(h, p);
+  $(id).replaceChildren(d);
+}
+
+function bubble(id, name, text, mine) {
+  const d = document.createElement("div");
+  d.className = "bubble" + (mine ? " mine" : "");
+
+  const n = document.createElement("div");
+  n.className = "name";
+  n.textContent = name;
+
+  const t = document.createElement("div");
+  t.className = "text";
+  t.textContent = text;
+
+  d.append(n, t);
+  $(id).append(d);
+  $(id).scrollTop = $(id).scrollHeight;
+
+  return t;
+}
+
+function controls() {
+  const ready = !!me && !deleting;
+  const set = (id, disabled) => {
+    $(id).disabled = disabled;
+  };
+
+  set("newChat", !ready || thinking);
+  set("loadAI", !ready || loading);
+  $("loadAI").hidden = !!engine;
+
+  set("aiInput", !ready || !engine || thinking);
+  set("aiSend", !ready || !engine || thinking);
+
+  set("copyId", !ready || !myName);
+  set("startFriend", !ready || !myName || opening);
+  set("friendInput", !ready || !room || friendSending);
+  set("friendSend", !ready || !room || friendSending);
+
+  set("schoolInput", !ready || !schoolReady || schoolSending);
+  set("schoolSend", !ready || !schoolReady || schoolSending);
+
+  set("logout", accountBusy || thinking || loading || deleting);
+
+  set(
+    "openDelete",
+    accountBusy || thinking || loading || friendSending ||
+    schoolSending || suggestSending || deleting
+  );
+
+  ["submitAccount", "switchMode", "reset", "saveProfile"].forEach(id => {
+    set(id, accountBusy || !auth || deleting);
+  });
+
+  set("suggestSend", !ready || suggestSending);
+}
+
+// City and school choices.
+function locationFields(target, prefix) {
+  const options = {
+    City: [
+      "Palo Alto",
+      "Mountain View",
+      "Los Altos",
+      "Sunnyvale",
+      "San Jose",
+      "Menlo Park",
+      "San Francisco"
+    ],
+    School: [
+      "JLS Middle School",
+      "Fletcher Middle School",
+      "Greene Middle School",
+      "Palo Alto High School",
+      "Gunn High School",
+      "Not currently in school"
+    ]
+  };
+
+  for (const [type, values] of Object.entries(options)) {
+    const label = document.createElement("label");
+    label.textContent = type;
+
+    const select = document.createElement("select");
+    select.id = prefix + type;
+    select.add(new Option("Choose your " + type.toLowerCase(), ""));
+
+    values.forEach(value => {
+      select.add(new Option(value, value));
+    });
+
+    select.add(new Option("Other", "other"));
+
+    const input = document.createElement("input");
+    input.id = prefix + "Other" + type;
+    input.placeholder = "Enter your " + type.toLowerCase();
+    input.setAttribute("aria-label", input.placeholder);
+    input.maxLength = 100;
+    input.hidden = true;
+
+    select.onchange = () => {
+      input.hidden = select.value !== "other";
+      requiredFields();
+    };
+
+    label.append(select, input);
+    $(target).append(label);
+  }
+}
+
+locationFields("signupLocation", "signup");
+locationFields("profileLocation", "profile");
+
+function requiredFields() {
+  for (const prefix of ["signup", "profile"]) {
+    const needed = prefix === "signup"
+      ? signup && !me
+      : !!me && !myName;
+
+    for (const type of ["City", "School"]) {
+      $(prefix + type).required = needed;
+      $(prefix + "Other" + type).required =
+        needed && $(prefix + type).value === "other";
+    }
+  }
+
+  $("signupUsername").required = signup && !me;
+}
+
+function locations(prefix) {
+  const value = type => {
+    return $(prefix + type).value === "other"
+      ? $(prefix + "Other" + type).value.trim()
+      : $(prefix + type).value;
+  };
+
+  return {
+    city: value("City"),
+    school: value("School")
+  };
+}
+
+function fillLocations(prefix, data) {
+  for (const type of ["City", "School"]) {
+    const value = data[type.toLowerCase()] || "";
+    const select = $(prefix + type);
+
+    const known = [...select.options].some(option => {
+      return option.value === value && value !== "other";
+    });
+
+    select.value = known ? value : value ? "other" : "";
+    $(prefix + "Other" + type).value = known ? "" : value;
+    $(prefix + "Other" + type).hidden = select.value !== "other";
+  }
+
+  requiredFields();
+}
+
+// Account dialog.
+function signupMode(value) {
+  signup = value;
+  $("signupFields").hidden = !value;
+
+  $("accountHeading").textContent = value
+    ? "Create your Mango account"
+    : "Sign in to Mango";
+
+  $("submitAccount").textContent = value
+    ? "Create account"
+    : "Sign in";
+
+  $("switchMode").textContent = value
+    ? "Already have an account? Sign in"
+    : "New here? Create an account";
+
+  $("reset").hidden = value;
+  $("password").minLength = value ? 6 : 1;
+  $("password").autocomplete = value
+    ? "new-password"
+    : "current-password";
+
+  requiredFields();
+}
+
+$("switchMode").onclick = () => signupMode(!signup);
+$("accountButton").onclick = () => $("accountDialog").showModal();
+$("closeAccount").onclick = () => $("accountDialog").close();
+
+// Navigation. The optional Games page is created by mango-games.js.
+function showTab(value) {
+  tab = value;
+
+  for (const name of ["home", "ai", "friends", "school", "games"]) {
+    const page = $(name);
+    const button = $(name + "Tab");
+
+    if (page) page.hidden = name !== value;
+    if (button) {
+      button.setAttribute("aria-pressed", String(name === value));
+    }
+  }
+
+  if (value === "school") {
+    openSchool();
+  } else {
+    resetSchool();
+  }
+}
+
+for (const name of ["home", "ai", "friends", "school", "games"]) {
+  const button = $(name + "Tab");
+  if (button) button.onclick = () => showTab(name);
+}
+
+$("openAI").onclick = () => showTab("ai");
+
+// AI chat storage.
+const chatKey = () => me ? "mango-chats-v2-" + me.uid : null;
+
+const fresh = () => ({
+  id: crypto.randomUUID(),
+  title: "New chat",
+  messages: []
+});
+
+const current = () => chats.find(chat => chat.id === activeId);
+
+function validChat(chat) {
+  return chat &&
+    typeof chat.id === "string" &&
+    typeof chat.title === "string" &&
+    Array.isArray(chat.messages) &&
+    chat.messages.length % 2 === 0 &&
+    chat.messages.every((message, index) => {
+      return message &&
+        message.role === (index % 2 ? "assistant" : "user") &&
+        typeof message.content === "string";
+    });
+}
+
+function importOld() {
+  if (!me) return;
+
+  try {
+    if (localStorage.getItem("mango-old-chats-imported-by")) return;
+
+    const old = JSON.parse(localStorage.getItem("mango-chats-v1"));
+    if (!Array.isArray(old)) return;
+
+    const valid = old.filter(chat => {
+      return validChat(chat) && chat.messages.length;
+    });
+
+    if (!valid.length) return;
+
+    const accepted = confirm(
+      "Import " + valid.length + " old chats into " + me.email +
+      "? Only import chats that belong to you."
+    );
+
+    if (!accepted) return;
+
+    const saved = JSON.parse(
+      localStorage.getItem(chatKey()) || "[]"
+    );
+
+    if (!Array.isArray(saved)) throw Error("Invalid history");
+
+    const merged = saved.filter(validChat);
+
+    for (const chat of valid) {
+      const duplicate = merged.some(existing => {
+        return JSON.stringify(existing.messages) ===
+          JSON.stringify(chat.messages);
+      });
+
+      if (!duplicate) {
+        merged.push({
+          ...chat,
+          id: crypto.randomUUID()
+        });
+      }
+    }
+
+    localStorage.setItem(chatKey(), JSON.stringify(merged));
+    localStorage.setItem("mango-old-chats-imported-by", me.uid);
+  } catch {
+    alert("Import failed. Your original chats were kept.");
+  }
+}
+
+function readChats() {
+  chats = [];
+
+  if (me) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(chatKey()));
+      if (Array.isArray(saved)) chats = saved.filter(validChat);
+    } catch {}
+
+    if (!chats.length) chats.push(fresh());
+  }
+
+  activeId = chats[0]?.id || null;
+}
+
+function saveChats() {
+  if (!me) return;
+
+  try {
+    localStorage.setItem(chatKey(), JSON.stringify(chats));
+  } catch {
+    $("aiStatus").textContent =
+      "Browser storage is full or unavailable. Chats may not save.";
+  }
+}
+
+function renderAI() {
+  const chat = current();
+  $("aiMessages").replaceChildren();
+
+  if (!chat?.messages.length) {
+    welcome(
+      "aiMessages",
+      me ? "What can I help with?" : "Welcome to Mango AI",
+      me ? "Ask a question or start a new chat." : "Sign in to begin."
+    );
+    return;
+  }
+
+  for (const message of chat.messages) {
+    bubble(
+      "aiMessages",
+      message.role === "user" ? "You" : "🥭 Mango",
+      message.content,
+      message.role === "user"
+    );
+  }
+}
+
+function renderAIList() {
+  $("aiList").replaceChildren();
+
+  for (const chat of chats) {
+    const row = document.createElement("div");
+    row.className = "row" + (chat.id === activeId ? " active" : "");
+
+    const button = document.createElement("button");
+    button.className = "title";
+    button.textContent = chat.title;
+    button.title = chat.title;
+    button.disabled = thinking || deleting;
+
+    button.onclick = () => {
+      activeId = chat.id;
+      $("aiInput").value = "";
+      renderAIList();
+      renderAI();
+    };
+
+    const remove = document.createElement("button");
+    remove.className = "remove";
+    remove.textContent = "×";
+    remove.setAttribute("aria-label", "Delete " + chat.title);
+    remove.disabled = thinking || deleting;
+
+    remove.onclick = () => {
+      if (!confirm("Delete this AI chat?")) return;
+
+      chats = chats.filter(existing => existing.id !== chat.id);
+      if (!chats.length) chats.push(fresh());
+
+      if (activeId === chat.id) {
+        activeId = chats[0].id;
+        $("aiInput").value = "";
+      }
+
+      saveChats();
+      renderAIList();
+      renderAI();
+    };
+
+    row.append(button, remove);
+    $("aiList").append(row);
+  }
+}
+
+$("newChat").onclick = () => {
+  if (!me || thinking || deleting) return;
+
+  const chat = fresh();
+  chats.unshift(chat);
+  activeId = chat.id;
+  $("aiInput").value = "";
+
+  saveChats();
+  renderAIList();
+  renderAI();
+};
+
+$("loadAI").onclick = async () => {
+  if (!me || loading || engine || deleting) return;
+
+  loading = true;
+  controls();
+
+  try {
+    if (!navigator.gpu) {
+      throw Error(
+        "WebGPU is unavailable. Try updated Chrome or Edge " +
+        "with graphics acceleration."
+      );
+    }
+
+    $("aiStatus").textContent = "Loading AI software…";
+
+    const { CreateMLCEngine } = await import(
+      "https://esm.run/@mlc-ai/web-llm@0.2.85"
+    );
+
+    engine = await CreateMLCEngine(
+      "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+      {
+        initProgressCallback: progress => {
+          if (me) $("aiStatus").textContent = progress.text;
+        }
+      }
+    );
+
+    if (me) $("aiStatus").textContent = "Ready!";
+  } catch (error) {
+    if (me) fail("aiStatus", error);
+    $("loadAI").textContent = "Retry loading AI";
+  } finally {
+    loading = false;
+    controls();
+  }
+};
+
+$("aiForm").onsubmit = async event => {
+  event.preventDefault();
+
+  if (!me || !engine || thinking || deleting) return;
+
+  const text = $("aiInput").value.trim();
+  if (!text) return;
+
+  const chat = current();
+  const uid = me.uid;
+
+  const messages = [
+    {
+      role: "system",
+      content:
+        "You are Mango, a friendly assistant. Give clear, short answers. " +
+        "Say when you do not know something."
+    },
+    ...chat.messages.slice(-6),
+    { role: "user", content: text }
+  ];
+
+  thinking = true;
+  controls();
+  renderAIList();
+  $("aiInput").value = "";
+
+  if (!chat.messages.length) $("aiMessages").replaceChildren();
+
+  bubble("aiMessages", "You", text, true);
+  const output = bubble("aiMessages", "🥭 Mango", "Thinking…", false);
+  $("aiStatus").textContent = "Thinking…";
+
+  try {
+    const result = await engine.chat.completions.create({
+      messages,
+      max_tokens: 384,
+      temperature: .7
+    });
+
+    if (me?.uid !== uid) return;
+
+    const answer = result.choices[0]?.message?.content;
+    if (!answer) throw Error("Empty reply. Try again.");
+
+    if (!chat.messages.length) {
+      chat.title = text.length > 28
+        ? text.slice(0, 28) + "…"
+        : text;
+    }
+
+    chat.messages.push(
+      { role: "user", content: text },
+      { role: "assistant", content: answer }
+    );
+
+    output.textContent = answer;
+    $("aiStatus").textContent = "Ready!";
+    saveChats();
+
+    $("aiMessages").scrollTop = $("aiMessages").scrollHeight;
+  } catch (error) {
+    if (me?.uid === uid) {
+      renderAI();
+      $("aiInput").value = text;
+      fail("aiStatus", error);
+    }
+  } finally {
+    thinking = false;
+    controls();
+    renderAIList();
+  }
+};
+
+// Usernames and private profiles.
+async function loadProfile() {
+  if (!me) return;
+
+  const uid = me.uid;
+  const ticket = ++profileTicket;
+
+  const snapshot = await F.getDoc(
+    F.doc(db, "userProfiles", uid)
+  );
+
+  const data = snapshot.data() || {};
+  let registered = false;
+
+  if (validName(data.username || "")) {
+    const nameRecord = await F.getDoc(
+      F.doc(db, "usernames", data.username)
+    );
+
+    registered = nameRecord.exists() &&
+      nameRecord.data().uid === uid;
+  }
+
+  if (
+    me?.uid !== uid ||
+    ticket !== profileTicket ||
+    deleting
+  ) return;
+
+  myName = registered ? data.username : null;
+
+  $("myId").textContent = myName
+    ? "@" + myName
+    : "Choose one in Account";
+
+  $("profileForm").hidden = !!myName;
+
+  $("savedProfile").textContent = myName
+    ? "Mango ID: @" + myName + " · School: " + (data.school || "")
+    : "";
+
+  $("profileUsername").value = data.username || "";
+
+  fillLocations("profile", data);
+  controls();
+
+  if (!myName) {
+    $("accountStatus").textContent =
+      "Choose a unique Mango ID below to finish your account.";
+  }
+
+  if (tab === "school") openSchool();
+}
+
+async function saveProfile(uid, name, city, school) {
+  name = normalize(name);
+
+  if (!validName(name)) {
+    throw Error("Use 3–20 letters, numbers, or underscores.");
+  }
+
+  if (!city || !school || city.length > 100 || school.length > 100) {
+    throw Error(
+      "Choose a city and school, each at most 100 characters."
+    );
+  }
+
+  await F.runTransaction(db, async transaction => {
+    const profileRef = F.doc(db, "userProfiles", uid);
+    const nameRef = F.doc(db, "usernames", name);
+
+    const old = await transaction.get(profileRef);
+    const taken = await transaction.get(nameRef);
+    const previous = old.data() || {};
+
+    let oldName = null;
+
+    if (
+      previous.username &&
+      previous.username !== name &&
+      validName(previous.username)
+    ) {
+      oldName = await transaction.get(
+        F.doc(db, "usernames", previous.username)
+      );
+    }
+
+    if (taken.exists() && taken.data().uid !== uid) {
+      throw Error("That username is taken.");
+    }
+
+    if (oldName?.exists() && oldName.data().uid === uid) {
+      throw Error("Your registered username cannot be changed.");
+    }
+
+    if (!taken.exists()) {
+      transaction.set(nameRef, { uid });
+    }
+
+    transaction.set(profileRef, {
+      username: name,
+      city,
+      school,
+      createdAt: previous.createdAt || F.serverTimestamp()
+    });
+  });
+
+  profileTicket++;
+  await loadProfile();
+}
+
+// Friend messaging.
+function friendError(error) {
+  $("friendStatus").textContent =
+    "Connection failed: " + error.message +
+    " Check your Firestore rules.";
+}
+
+function openRoom(id, other, label) {
+  if (stopMessages) stopMessages();
+
+  room = id;
+  const version = ++roomVersion;
+  const account = epoch;
+
+  $("friendInput").value = "";
+  $("friendMessages").replaceChildren();
+  $("friendHeading").textContent = "💬 " + label;
+  $("friendStatus").textContent = "Latest 100 messages";
+
+  controls();
+
+  stopMessages = F.onSnapshot(
+    F.query(
+      F.collection(db, "friendRooms", id, "messages"),
+      F.orderBy("createdAt", "desc"),
+      F.limit(100)
+    ),
+    snapshot => {
+      if (account !== epoch || version !== roomVersion) return;
+
+      $("friendMessages").replaceChildren();
+
+      for (const document of snapshot.docs.slice().reverse()) {
+        const message = document.data();
+        const mine = message.sender === me?.uid;
+
+        bubble(
+          "friendMessages",
+          mine ? "You" : label,
+          message.text,
+          mine
+        );
+      }
+    },
+    error => {
+      if (account !== epoch || version !== roomVersion) return;
+
+      room = null;
+      controls();
+      friendError(error);
+    }
+  );
+}
+
+function renderFriends() {
+  $("friendList").replaceChildren();
+
+  for (const friendRoom of friendRooms) {
+    const other = friendRoom.members.find(uid => uid !== me?.uid);
+    let name = null;
+
+    try {
+      name = localStorage.getItem("mango-friend-name-" + other);
+    } catch {}
+
+    const label = name
+      ? "@" + name
+      : "Friend " + other.slice(0, 6);
+
+    const button = document.createElement("button");
+    button.className = "title";
+    button.style.cssText = "display:block;width:100%;margin-bottom:6px";
+    button.textContent = "💬 " + label;
+    button.disabled = deleting;
+
+    button.onclick = () => {
+      if (!deleting) openRoom(friendRoom.id, other, label);
+    };
+
+    $("friendList").append(button);
+  }
+}
+
+function watchFriends() {
+  epoch++;
+  roomVersion++;
+
+  if (stopRooms) stopRooms();
+  if (stopMessages) stopMessages();
+
+  room = null;
+  friendSending = false;
+  opening = false;
+  friendRooms = [];
+
+  $("friendList").replaceChildren();
+  $("friendInput").value = "";
+  $("friendId").value = "";
+  $("myId").textContent = me ? "Loading…" : "Sign in first";
+  $("friendHeading").textContent = "💬 Friends";
+
+  $("friendStatus").textContent = me
+    ? "Enter a friend’s Mango username."
+    : "Sign in to begin.";
+
+  welcome(
+    "friendMessages",
+    "Chat with friends",
+    "Choose a conversation on the left."
+  );
+
+  controls();
+
+  if (!me || !db || deleting) return;
+
+  const account = epoch;
+  const uid = me.uid;
+
+  stopRooms = F.onSnapshot(
+    F.query(
+      F.collection(db, "friendRooms"),
+      F.where("members", "array-contains", uid)
+    ),
+    snapshot => {
+      if (account !== epoch) return;
+
+      friendRooms = snapshot.docs.map(document => ({
+        id: document.id,
+        ...document.data()
+      }));
+
+      renderFriends();
+    },
+    error => {
+      if (account === epoch) friendError(error);
+    }
+  );
+}
+
+$("copyId").onclick = async () => {
+  if (!myName) return;
+
+  try {
+    await navigator.clipboard.writeText(myName);
+    $("friendStatus").textContent = "Copied @" + myName + "!";
+  } catch {
+    $("friendStatus").textContent =
+      "Select your Mango ID and copy it manually.";
+  }
+};
+
+$("startFriend").onclick = async () => {
+  if (!me || !myName || opening || deleting) return;
+
+  const name = normalize($("friendId").value);
+
+  if (!validName(name)) {
+    $("friendStatus").textContent = "Enter a valid Mango username.";
+    return;
+  }
+
+  const account = epoch;
+  opening = true;
+  controls();
+
+  try {
+    const record = await F.getDoc(
+      F.doc(db, "usernames", name)
+    );
+
+    if (account !== epoch) return;
+    if (!record.exists()) throw Error("Username not found.");
+
+    const other = record.data().uid;
+    if (other === me.uid) throw Error("Enter a friend’s username.");
+
+    const members = [me.uid, other].sort();
+    const id = members.join("~");
+
+    try {
+      localStorage.setItem("mango-friend-name-" + other, name);
+    } catch {}
+
+    try {
+      await F.setDoc(
+        F.doc(db, "friendRooms", id),
+        { members }
+      );
+    } catch (error) {
+      if (error.code !== "permission-denied") throw error;
+    }
+
+    if (account === epoch) {
+      openRoom(id, other, "@" + name);
+      renderFriends();
+    }
+  } catch (error) {
+    if (account === epoch) friendError(error);
+  } finally {
+    if (account === epoch) {
+      opening = false;
+      controls();
+    }
+  }
+};
+
+$("friendForm").onsubmit = async event => {
+  event.preventDefault();
+
+  if (!me || !room || friendSending || deleting) return;
+
+  const text = $("friendInput").value.trim();
+  if (!text) return;
+
+  const account = epoch;
+  const target = room;
+
+  friendSending = true;
+  controls();
+
+  try {
+    await F.addDoc(
+      F.collection(db, "friendRooms", target, "messages"),
+      {
+        sender: me.uid,
+        text,
+        createdAt: F.serverTimestamp()
+      }
+    );
+
+    if (account === epoch && target === room) {
+      $("friendInput").value = "";
+    }
+  } catch (error) {
+    if (account === epoch) friendError(error);
+  } finally {
+    if (account === epoch) {
+      friendSending = false;
+      controls();
+    }
+  }
+};
+
+// School group chat.
+function resetSchool() {
+  schoolEpoch++;
+
+  if (stopSchool) stopSchool();
+
+  stopSchool = null;
+  schoolRoom = null;
+  schoolReady = false;
+  schoolSending = false;
+
+  $("schoolInput").value = "";
+  $("schoolMessages").replaceChildren();
+  $("schoolHeading").textContent = "🏫 School Chat";
+  $("schoolStatus").textContent =
+    "Sign in and finish your profile to join.";
+
+  controls();
+}
+
+async function openSchool() {
+  resetSchool();
+
+  if (!me || !db || deleting) return;
+
+  const version = schoolEpoch;
+  const uid = me.uid;
+
+  $("schoolStatus").textContent = "Opening your school chat…";
+
+  try {
+    const profile = await F.getDoc(
+      F.doc(db, "userProfiles", uid)
+    );
+
+    if (version !== schoolEpoch || me?.uid !== uid) return;
+
+    const data = profile.data();
+
+    if (!data?.school || !data?.username) {
+      throw Error("Open Account and finish your profile first.");
+    }
+
+    if (data.school === "Not currently in school") {
+      throw Error("Your profile has no school selected.");
+    }
+
+    const registered = await F.getDoc(
+      F.doc(db, "usernames", data.username)
+    );
+
+    if (version !== schoolEpoch || me?.uid !== uid) return;
+
+    if (!registered.exists() || registered.data().uid !== uid) {
+      throw Error("Register your Mango ID in Account first.");
+    }
+
+    const id = encodeURIComponent(data.school);
+
+    try {
+      await F.setDoc(
+        F.doc(db, "schoolRooms", id),
+        { school: data.school }
+      );
+    } catch (error) {
+      if (error.code !== "permission-denied") throw error;
+    }
+
+    if (version !== schoolEpoch || me?.uid !== uid) return;
+
+    schoolRoom = id;
+    $("schoolHeading").textContent = "🏫 " + data.school;
+    $("schoolStatus").textContent =
+      "School group chat — latest 100 messages";
+
+    stopSchool = F.onSnapshot(
+      F.query(
+        F.collection(db, "schoolRooms", id, "messages"),
+        F.orderBy("createdAt", "desc"),
+        F.limit(100)
+      ),
+      snapshot => {
+        if (version !== schoolEpoch || me?.uid !== uid) return;
+
+        $("schoolMessages").replaceChildren();
+
+        for (const document of snapshot.docs.slice().reverse()) {
+          const message = document.data();
+          const mine = message.sender === uid;
+
+          bubble(
+            "schoolMessages",
+            mine ? "You" : "@" + message.username,
+            message.text,
+            mine
+          );
+        }
+
+        schoolReady = true;
+        controls();
+      },
+      error => {
+        if (version !== schoolEpoch) return;
+
+        schoolReady = false;
+        schoolRoom = null;
+        controls();
+        fail("schoolStatus", error);
+      }
+    );
+  } catch (error) {
+    if (version === schoolEpoch) fail("schoolStatus", error);
+  }
+}
+
+$("schoolForm").onsubmit = async event => {
+  event.preventDefault();
+
+  if (
+    !me || !schoolRoom || !schoolReady ||
+    schoolSending || deleting
+  ) return;
+
+  const text = $("schoolInput").value.trim();
+  if (!text) return;
+
+  const version = schoolEpoch;
+  const uid = me.uid;
+  const target = schoolRoom;
+
+  schoolSending = true;
+  controls();
+
+  try {
+    const profile = await F.getDoc(
+      F.doc(db, "userProfiles", uid)
+    );
+
+    if (version !== schoolEpoch || me?.uid !== uid) return;
+
+    await F.addDoc(
+      F.collection(db, "schoolRooms", target, "messages"),
+      {
+        sender: uid,
+        username: profile.data().username,
+        text,
+        createdAt: F.serverTimestamp()
+      }
+    );
+
+    if (version === schoolEpoch) {
+      $("schoolInput").value = "";
+      $("schoolStatus").textContent =
+        "School group chat — latest 100 messages";
+    }
+  } catch (error) {
+    if (version === schoolEpoch) fail("schoolStatus", error);
+  } finally {
+    if (version === schoolEpoch) {
+      schoolSending = false;
+      controls();
+    }
+  }
+};
+
+// Suggestions and email notifications.
+$("suggestTab").onclick = () => {
+  if (!me) {
+    $("accountDialog").showModal();
+    $("accountStatus").textContent = "Sign in to send a suggestion.";
+    return;
+  }
+
+  $("suggestStatus").textContent = "";
+  $("suggestDialog").showModal();
+};
+
+$("closeSuggest").onclick = () => {
+  if (!suggestSending) $("suggestDialog").close();
+};
+
+$("suggestDialog").addEventListener("cancel", event => {
+  if (suggestSending) event.preventDefault();
+});
+
+$("suggestForm").onsubmit = async event => {
+  event.preventDefault();
+
+  if (!me || !db || suggestSending || deleting) return;
+
+  const text = $("suggestText").value.trim();
+  const category = $("suggestCategory").value;
+  const username = myName || "Mango user";
+  const sender = me.uid;
+
+  if (text.length < 10) {
+    $("suggestStatus").textContent =
+      "Please write at least 10 characters.";
+    return;
+  }
+
+  suggestSending = true;
+  controls();
+
+  $("closeSuggest").disabled = true;
+  $("suggestStatus").textContent = "Sending…";
+
+  let saved = false;
+
+  try {
+    await F.addDoc(
+      F.collection(db, "suggestions"),
+      {
+        sender,
+        category,
+        text,
+        createdAt: F.serverTimestamp()
+      }
+    );
+
+    saved = true;
+
+    const response = await fetch(
+      "https://api.emailjs.com/api/v1.0/email/send",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          service_id: "service_h2b1bel",
+          template_id: "template_8vcqhxn",
+          user_id: "Y67BK6Iku0JCguel_",
+          template_params: {
+            username,
+            category,
+            message: text
+          }
+        }),
+        signal: AbortSignal.timeout(20000)
+      }
+    );
+
+    if (!response.ok) throw Error("Email notification failed.");
+
+    $("suggestText").value = "";
+    $("suggestStatus").textContent =
+      "Thanks! Your suggestion was saved and accepted " +
+      "for email delivery. 🥭";
+  } catch {
+    $("suggestStatus").textContent = saved
+      ? "Your suggestion was saved, but email delivery could not be " +
+        "confirmed. Mango’s owner can still read it in Firebase."
+      : "Could not save your suggestion. Please try again.";
+
+    if (saved) $("suggestText").value = "";
+  } finally {
+    suggestSending = false;
+    $("closeSuggest").disabled = false;
+    controls();
+  }
+};
+
+// Authentication.
+function authError(error) {
+  return ({
+    "auth/invalid-credential":
+      "The email or password is incorrect.",
+    "auth/email-already-in-use":
+      "This email has an account. Try signing in.",
+    "auth/invalid-email":
+      "Enter a valid email address.",
+    "auth/weak-password":
+      "Choose a stronger password with at least 6 characters.",
+    "auth/operation-not-allowed":
+      "Enable Email/Password in Firebase Authentication.",
+    "auth/unauthorized-domain":
+      "Add your GitHub Pages domain to Firebase authorized domains.",
+    "auth/too-many-requests":
+      "Too many attempts. Try again later.",
+    "auth/network-request-failed":
+      "Check your internet connection."
+  })[error.code] || error.message;
+}
+
+async function accountAction(action) {
+  if (!auth || accountBusy || deleting) return;
+
+  accountBusy = true;
+  controls();
+  $("accountStatus").textContent = "Please wait…";
+
+  try {
+    await action();
+  } catch (error) {
+    $("accountStatus").textContent = authError(error);
+  } finally {
+    accountBusy = false;
+    controls();
+  }
+}
+
+$("accountForm").onsubmit = event => {
+  event.preventDefault();
+
+  const creating = signup;
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  const name = normalize($("signupUsername").value);
+  const { city, school } = locations("signup");
+
+  if (creating && (!validName(name) || !city || !school)) {
+    $("accountStatus").textContent =
+      "Choose a valid username, city, and school.";
+    return;
+  }
+
+  accountAction(async () => {
+    if (!creating) {
+      await A.signInWithEmailAndPassword(auth, email, password);
+      $("accountDialog").close();
+      return;
+    }
+
+    const taken = await F.getDoc(
+      F.doc(db, "usernames", name)
+    );
+
+    if (taken.exists()) throw Error("That username is taken.");
+
+    const result = await A.createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    try {
+      await saveProfile(result.user.uid, name, city, school);
+      $("accountStatus").textContent =
+        "Welcome! Your Mango ID is @" + name;
+    } catch (error) {
+      if (me?.uid === result.user.uid) {
+        $("profileUsername").value = name;
+        fillLocations("profile", { city, school });
+        $("profileForm").hidden = false;
+      }
+
+      $("accountStatus").textContent =
+        "Your login was created, but your Mango ID was not saved: " +
+        error.message + " Complete the form below.";
+    }
+  });
+};
+
+$("profileForm").onsubmit = event => {
+  event.preventDefault();
+  if (!me) return;
+
+  const uid = me.uid;
+  const name = normalize($("profileUsername").value);
+  const { city, school } = locations("profile");
+
+  accountAction(async () => {
+    await saveProfile(uid, name, city, school);
+    $("accountStatus").textContent = "Your Mango ID is @" + name;
+  });
+};
+
+$("reset").onclick = () => {
+  if (!$("email").reportValidity()) return;
+
+  accountAction(async () => {
+    await A.sendPasswordResetEmail(
+      auth,
+      $("email").value.trim()
+    );
+
+    $("accountStatus").textContent =
+      "If this email has an account, check its inbox for a reset link.";
+  });
+};
+
+$("logout").onclick = () => {
+  if (thinking || loading || deleting) return;
+
+  accountAction(async () => {
+    await A.signOut(auth);
+    $("accountStatus").textContent = "You are signed out.";
+  });
+};
+
+// Account deletion.
+$("openDelete").onclick = () => {
+  if (
+    !me || accountBusy || thinking || loading ||
+    friendSending || schoolSending || suggestSending || deleting
+  ) return;
+
+  $("deletePassword").value = "";
+  $("deleteConfirm").value = "";
+  $("deleteStatus").textContent = "";
+  $("deleteDialog").showModal();
+};
+
+$("deleteCancel").onclick = () => {
+  if (!deleting) $("deleteDialog").close();
+};
+
+$("deleteDialog").addEventListener("cancel", event => {
+  if (deleting) event.preventDefault();
+});
+
+$("deleteForm").onsubmit = async event => {
+  event.preventDefault();
+
+  if (!auth?.currentUser || deleting) return;
+
+  if ($("deleteConfirm").value.trim() !== "DELETE") {
+    $("deleteStatus").textContent = "Type DELETE exactly.";
+    return;
+  }
+
+  const user = auth.currentUser;
+  const uid = user.uid;
+  const password = $("deletePassword").value;
+
+  deleting = true;
+  accountBusy = true;
+
+  controls();
+  renderAIList();
+  renderFriends();
+
+  const deleteControls = [
+    "deleteSubmit",
+    "deleteCancel",
+    "deletePassword",
+    "deleteConfirm"
+  ];
+
+  deleteControls.forEach(id => {
+    $(id).disabled = true;
+  });
+
+  let removed = false;
+
+  try {
+    $("deleteStatus").textContent = "Checking your password…";
+
+    await A.reauthenticateWithCredential(
+      user,
+      A.EmailAuthProvider.credential(user.email, password)
+    );
+
+    $("deletePassword").value = "";
+
+    if (auth.currentUser?.uid !== uid) {
+      throw Error("The account changed. Please retry.");
+    }
+
+    profileTicket++;
+    epoch++;
+    roomVersion++;
+
+    if (stopRooms) stopRooms();
+    if (stopMessages) stopMessages();
+
+    room = null;
+    resetSchool();
+
+    $("deleteStatus").textContent = "Deleting your private profile…";
+
+    await F.deleteDoc(
+      F.doc(db, "userProfiles", uid)
+    );
+
+    removed = true;
+    $("deleteStatus").textContent = "Deleting your login…";
+
+    await A.deleteUser(user);
+
+    let localFailed = false;
+
+    try {
+      localStorage.removeItem("mango-chats-v2-" + uid);
+
+      if (
+        localStorage.getItem("mango-old-chats-imported-by") === uid
+      ) {
+        localStorage.removeItem("mango-chats-v1");
+        localStorage.removeItem("mango-old-chats-imported-by");
+      }
+    } catch {
+      localFailed = true;
+    }
+
+    chats = [];
+    activeId = null;
+    renderAI();
+    renderAIList();
+
+    $("deleteDialog").close();
+    $("accountDialog").close();
+    showTab("home");
+
+    alert(
+      localFailed
+        ? "Account deleted. Clear Mango site data to remove local " +
+          "AI chats. Shared messages remain."
+        : "Account deleted. Shared messages and submitted suggestions remain."
+    );
+  } catch (error) {
+    $("deletePassword").value = "";
+
+    $("deleteStatus").textContent =
+      (
+        removed
+          ? "Your profile was removed, but the login still exists. " +
+            "Enter your password and retry deletion. "
+          : "Deletion failed: "
+      ) + authError(error);
+  } finally {
+    deleting = false;
+    accountBusy = false;
+
+    deleteControls.forEach(id => {
+      $(id).disabled = false;
+    });
+
+    if (auth.currentUser?.uid === uid) {
+      watchFriends();
+      loadProfile().catch(() => {});
+    }
+
+    controls();
+    renderAIList();
+  }
+};
+
+// Start the page.
+signupMode(false);
+renderAI();
+controls();
+
+welcome("friendMessages", "Chat with friends", "Sign in to begin.");
+welcome("schoolMessages", "School Chat", "Sign in to begin.");
+
+// Connect Firebase.
+try {
+  const [appSDK, authSDK, firestoreSDK] = await Promise.all([
+    import(
+      "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js"
+    ),
+    import(
+      "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js"
+    ),
+    import(
+      "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js"
+    )
+  ]);
+
+  A = authSDK;
+  F = firestoreSDK;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBCjlaVPiitfZ3ks-nWJ2Hj_04ievS3OGY",
+    authDomain: "mango-36aa1.firebaseapp.com",
+    projectId: "mango-36aa1",
+    storageBucket: "mango-36aa1.firebasestorage.app",
+    messagingSenderId: "459510712517",
+    appId: "1:459510712517:web:b0fede545eafe2e5ebc8ac"
+  };
+
+  const app = appSDK.initializeApp(firebaseConfig);
+  auth = A.getAuth(app);
+  db = F.getFirestore(app);
+
+  A.onAuthStateChanged(auth, async user => {
+    const changed = me?.uid !== user?.uid;
+
+    me = user;
+    myName = null;
+    profileTicket++;
+    resetSchool();
+
+    $("accountButton").disabled = false;
+    $("accountButton").textContent = me ? "Account" : "Sign in";
+    $("accountForm").hidden = !!me;
+    $("accountPanel").hidden = !me;
+    $("profileForm").hidden = true;
+    $("savedProfile").textContent = "";
+    $("password").value = "";
+
+    $("accountInfo").textContent = me
+      ? "Signed in as " + me.email
+      : "";
+
+    $("accountStatus").textContent = me
+      ? "You are signed in!"
+      : "Sign in or create an account.";
+
+    if (!me) {
+      signupMode(false);
+      $("suggestDialog").close();
+      $("suggestText").value = "";
+    }
+
+    if (changed || !activeId) {
+      importOld();
+      readChats();
+
+      $("aiInput").value = "";
+      renderAI();
+      renderAIList();
+      watchFriends();
+    }
+
+    $("aiStatus").textContent = !me
+      ? "Sign in to begin."
+      : engine
+        ? "Ready!"
+        : "Click Load AI. The first download is several hundred MB. " +
+          "A WebGPU-compatible browser and supported graphics hardware " +
+          "are required.";
+
+    requiredFields();
+    controls();
+
+    if (me && !deleting) {
+      const uid = me.uid;
+
+      try {
+        await loadProfile();
+      } catch {
+        if (me?.uid === uid) {
+          $("accountStatus").textContent =
+            "Could not load your Mango ID. " +
+            "Check Firestore rules and refresh.";
+        }
+      }
+    }
+  });
+} catch {
+  $("accountButton").disabled = false;
+  $("accountButton").textContent = "Sign in";
+
+  $("accountStatus").textContent =
+    "Could not connect to Firebase. " +
+    "Check your connection and refresh.";
+
+  $("aiStatus").textContent =
+    "Account service unavailable. Refresh to retry.";
+}
+</script>
+
+</body>
+</html>
