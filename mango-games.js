@@ -77,7 +77,7 @@
     $('mangoGameFrame').src = path;
     $('mangoPlayer').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=skyway-1');
+  $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=steering-2');
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
   $('playRacing').onclick = () => play('PMNDRS Racing','https://racing.pmnd.rs/');
   $('mangoCloseGame').onclick = closeGame;
