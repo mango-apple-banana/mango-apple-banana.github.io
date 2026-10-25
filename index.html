@@ -231,6 +231,24 @@ label input,label select{width:100%}
   .composer input{flex-basis:100%;width:100%}
   .composer button{margin-left:auto}
 }
+
+#home{padding:52px 22px 64px;max-width:1200px;margin:auto}
+#home h1{margin:0 0 12px}
+.home-ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:32px auto;text-align:left}
+.home-ai-card{display:flex;flex-direction:column;gap:12px;padding:24px;background:#292929;border:1px solid #484848;border-radius:20px}
+.home-ai-card h2{margin:0;font-size:24px;overflow-wrap:anywhere}
+.home-ai-card .fruit{font-size:42px}
+.home-ai-card p{margin:0 0 10px;line-height:1.6;flex:1}
+.home-ai-card button{align-self:flex-start}
+.home-ai-card[data-assistant="mango"],#ai[data-assistant="mango"]{--assistant-font:system-ui,-apple-system,sans-serif}
+.home-ai-card[data-assistant="apple"],#ai[data-assistant="apple"]{--assistant-font:Georgia,"Times New Roman",serif}
+.home-ai-card[data-assistant="banana"],#ai[data-assistant="banana"]{--assistant-font:"Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
+.home-ai-card[data-assistant="mix"],#ai[data-assistant="mix"]{--assistant-font:"Courier New",Courier,monospace}
+.home-ai-card h2,.home-ai-card p,#ai h1,#aiAssistantDescription,#aiMessages .text{font-family:var(--assistant-font)}
+#aiMessages .bubble[data-assistant="mango"] .text{font-family:system-ui,-apple-system,sans-serif}
+#aiMessages .bubble[data-assistant="apple"] .text{font-family:Georgia,"Times New Roman",serif}
+#aiMessages .bubble[data-assistant="banana"] .text{font-family:"Comic Sans MS","Chalkboard SE","Comic Neue",cursive}
+
 </style>
 </head>
 
@@ -248,9 +266,32 @@ label input,label select{width:100%}
 
 <section id="home">
   <h1>🥭 Welcome to Mango</h1>
-  <p>Chat with AI. Connect with friends and your school.</p>
-  <p>Open the Games tab to play.</p>
-  <button id="openAI" class="primary">Open Mango AI →</button>
+  <p>Pick your assistant. Find your ideas, learn something, or just chat.</p>
+  <div class="home-ai-grid" aria-label="AI assistants">
+    <article class="home-ai-card" data-assistant="mango">
+      <div class="fruit" aria-hidden="true">🥭</div>
+      <h2>Mango</h2><p>Your friendly everyday assistant for clear, helpful answers.</p>
+      <button id="home-mango" class="primary">Chat with Mango →</button>
+    </article>
+    <article class="home-ai-card" data-assistant="apple">
+      <div class="fruit" aria-hidden="true">🍎</div>
+      <h2>Apple</h2><p>Learn with patient explanations, simple steps, and examples.</p>
+      <button id="home-apple" class="primary">Chat with Apple →</button>
+    </article>
+    <article class="home-ai-card" data-assistant="banana">
+      <div class="fruit" aria-hidden="true">🍌</div>
+      <h2>Banana</h2><p>A playful partner for stories, games, and creative ideas.</p>
+      <button id="home-banana" class="primary">Chat with Banana →</button>
+    </article>
+    <article class="home-ai-card" data-assistant="mix">
+      <div class="fruit" aria-hidden="true">🥭🍌🍎</div>
+      <h2>Mango, Banana, Apple</h2><p>Surprise me! Mango, Apple, or Banana is randomly chosen for each reply.</p>
+      <button id="home-mix" class="primary">Chat with all three →</button>
+    </article>
+  </div>
+  <p>All four choices share one free AI engine. Each has its own chat list.</p>
+  <p>Use the tabs above for games, friends, and school chat.</p>
+  <button id="openAI">Open current AI chat →</button>
 </section>
 
 <section id="ai" class="layout" hidden>
@@ -556,9 +597,10 @@ function welcome(id, title, text) {
   $(id).replaceChildren(d);
 }
 
-function bubble(id, name, text, mine) {
+function bubble(id, name, text, mine, responder = null) {
   const d = document.createElement("div");
   d.className = "bubble" + (mine ? " mine" : "");
+  if (responder) d.dataset.assistant = responder;
 
   const n = document.createElement("div");
   n.className = "name";
@@ -583,6 +625,7 @@ function controls() {
 
   for (const id of ["mango", "apple", "banana", "mix"]) {
     set("assistant-" + id, thinking || deleting);
+    set("home-" + id, thinking || deleting);
   }
   set("newChat", !ready || thinking);
   set("loadAI", !ready || loading);
@@ -803,23 +846,31 @@ const assistants = {
     name: "Mango, Banana, Apple",
     emoji: "🥭🍌🍎",
     greeting: "A little of everything.",
-    description: "Friendly answers, clear steps, and creative ideas together.",
+    description: "Each question randomly goes to Mango, Apple, or Banana. The reply shows who answered.",
     prompt: "You are Mango, Banana, Apple, one assistant combining Mango's friendliness, Apple's clear teaching and Banana's creativity. Give one helpful concise answer. Do not pretend to be three separate models. Say when you do not know something."
   }
 };
 let activeAssistant = "mango";
 const assistant = () => assistants[activeAssistant];
-const assistantLabel = () => assistant().emoji + " " + assistant().name;
+const assistantLabel = (id = activeAssistant) => assistants[id].emoji + " " + assistants[id].name;
+function chooseResponder(id = activeAssistant) {
+  if (id !== "mix") return id;
+  const choices = ["mango", "apple", "banana"];
+  return choices[Math.floor(Math.random() * choices.length)];
+}
 function renderAssistantChoice() {
+  $("ai").dataset.assistant = activeAssistant;
   $("aiHeading").textContent = assistantLabel();
+  $("aiInput").placeholder = activeAssistant === "mix" ? "Ask Mango, Apple, or Banana…" : "Message " + assistant().name + "…";
+  $("aiInput").setAttribute("aria-label", $("aiInput").placeholder);
   $("aiAssistantDescription").textContent = assistant().description;
   for (const id of Object.keys(assistants)) {
     $("assistant-" + id).setAttribute("aria-pressed", String(id === activeAssistant));
   }
 }
-for (const id of Object.keys(assistants)) {
-  $("assistant-" + id).onclick = () => {
-    if (thinking || deleting || id === activeAssistant) return;
+function selectAssistant(id) {
+  if (thinking || deleting || !assistants[id]) return false;
+  if (id !== activeAssistant) {
     saveChats();
     activeAssistant = id;
     readChats();
@@ -828,7 +879,14 @@ for (const id of Object.keys(assistants)) {
     renderAIList();
     renderAI();
     controls();
-    if (tab === "ai") startAI();
+  }
+  if (tab === "ai") startAI();
+  return true;
+}
+for (const id of Object.keys(assistants)) {
+  $("assistant-" + id).onclick = () => selectAssistant(id);
+  $("home-" + id).onclick = () => {
+    if (selectAssistant(id)) showTab("ai");
   };
 }
 renderAssistantChoice();
@@ -950,11 +1008,13 @@ function renderAI() {
   }
 
   for (const message of chat.messages) {
+    const responder = assistants[message.assistantId] ? message.assistantId : activeAssistant;
     bubble(
       "aiMessages",
-      message.role === "user" ? "You" : assistantLabel(),
+      message.role === "user" ? "You" : assistantLabel(responder),
       message.content,
-      message.role === "user"
+      message.role === "user",
+      message.role === "assistant" ? responder : null
     );
   }
 }
@@ -1074,12 +1134,14 @@ $("aiForm").onsubmit = async event => {
   const chat = current();
   const uid = me.uid;
 
+  const responderId = chooseResponder();
+  const responder = assistants[responderId];
   const messages = [
     {
       role: "system",
-      content: assistant().prompt
+      content: responder.prompt
     },
-    ...chat.messages.slice(-6),
+    ...chat.messages.slice(-6).map(({role, content}) => ({role, content})),
     { role: "user", content: text }
   ];
 
@@ -1091,8 +1153,8 @@ $("aiForm").onsubmit = async event => {
   if (!chat.messages.length) $("aiMessages").replaceChildren();
 
   bubble("aiMessages", "You", text, true);
-  const output = bubble("aiMessages", assistantLabel(), "Thinking…", false);
-  $("aiStatus").textContent = "Thinking…";
+  const output = bubble("aiMessages", assistantLabel(responderId), "Thinking…", false, responderId);
+  $("aiStatus").textContent = responder.name + " is answering…";
 
   try {
     const result = await engine.chat.completions.create({
@@ -1114,7 +1176,7 @@ $("aiForm").onsubmit = async event => {
 
     chat.messages.push(
       { role: "user", content: text },
-      { role: "assistant", content: answer }
+      { role: "assistant", content: answer, assistantId: responderId }
     );
 
     output.textContent = answer;
