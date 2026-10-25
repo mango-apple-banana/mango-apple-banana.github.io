@@ -32,7 +32,7 @@
     <h1>🎮 Mango Games</h1>
     <p class="muted">Choose a game. These games are best played on a computer with a keyboard and mouse.</p>
     <div class="mango-game-grid">
-      <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#215260,#e7ac56)" aria-hidden="true">🏝️</div><h2>Mango Circuit</h2><p>A Mango original. Race twelve original 3D courses with full vertical loops, 90° wall rides, solid barriers, jumps, checkpoints, and best-run ghosts. Keyboard and touch controls.</p><button id="playCircuit" class="primary">Play Mango Circuit</button><p class="small">Original game · Plays right here</p></article>
+      <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#215260,#e7ac56)" aria-hidden="true">🏝️</div><h2>Mango Circuit</h2><p>A Mango original. Race twelve original 3D courses with full vertical loops, 90° wall rides, solid barriers, jumps, checkpoints, and best-run ghosts. Low racing car, responsive steering, instant restarts, and keyboard or touch controls.</p><button id="playCircuit" class="primary">Play Mango Circuit</button><p class="small">Original game · Plays right here</p></article>
       <article class="mango-game-card"><div class="mango-game-art">🎯</div><h2>Void Runner</h2><p>Survive waves in a neon 3D arena. Move with WASD, aim with your mouse, and click to fire.</p><button id="playVoid" class="primary">Play Void Runner</button></article>
       <article class="mango-game-card"><div class="mango-game-art racing">🏎️</div><h2>PMNDRS Racing</h2><p>Drive a 3D car around a desert track. Use WASD or arrow keys, Shift for boost, and R to reset.</p><button id="playRacing" class="primary">Play Racing</button></article>
     </div>
@@ -77,7 +77,7 @@
     $('mangoGameFrame').src = path;
     $('mangoPlayer').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=stunts-4');
+  $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=racing-5');
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
   $('playRacing').onclick = () => play('PMNDRS Racing','https://racing.pmnd.rs/');
   $('mangoCloseGame').onclick = closeGame;
