@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#112b34"><title>Mango Circuit — Original Racer</title>
+<style>
+*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#112b34;color:#fff;font-family:system-ui,-apple-system,sans-serif}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #fff;outline-offset:4px}canvas{width:100%;height:100dvh;display:block}#hud{position:absolute;inset:18px 22px auto;display:flex;justify-content:space-between;gap:12px;pointer-events:none}.brand{font-weight:900;letter-spacing:2px;font-size:18px}.brand span{color:#ffcd69}.tag{font-size:10px;letter-spacing:2px;color:#c5e7e7;margin-top:5px}.metrics{display:flex;gap:22px;text-align:right}.metric b{display:block;font-size:25px;font-variant-numeric:tabular-nums}.metric small{font-size:10px;letter-spacing:1.5px;color:#c5e7e7}.glass{background:#102b37d9;border:1px solid #ffffff28;border-radius:15px;padding:12px 16px;backdrop-filter:blur(10px)}#speedBox{position:absolute;bottom:25px;left:24px}.speed{font-size:54px;font-weight:900;font-style:italic;line-height:1}.unit{font-size:11px;letter-spacing:2px;color:#b2dfdf}#boostBox{position:absolute;bottom:25px;right:24px;width:180px}.meter{height:7px;background:#ffffff26;border-radius:9px;overflow:hidden;margin-top:9px}.meter i{display:block;height:100%;width:100%;background:#ffd06b;transition:width .08s}#toast{position:absolute;top:110px;left:50%;transform:translateX(-50%);text-align:center;font-size:17px;font-weight:800;text-shadow:0 2px 9px #102b37;pointer-events:none;white-space:nowrap}#count{position:absolute;top:38%;width:100%;text-align:center;font-size:90px;font-weight:950;text-shadow:0 4px 0 #112b34;pointer-events:none}#pause{pointer-events:auto;border:1px solid #ffffff40;color:white;background:#123844;border-radius:11px;padding:10px 15px}#progress{position:absolute;top:0;left:0;height:4px;background:#ffd06b;width:0}#overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(90deg,#0a2535bc,#0a253533);padding:22px}#overlay[hidden]{display:none}.panel{width:min(520px,100%);padding:32px;border:1px solid #ffffff33;border-radius:24px;background:#102b37e8;box-shadow:0 20px 80px #0004}.eyebrow{font-size:11px;letter-spacing:3px;color:#ffd06b;font-weight:800}.panel h1{font-size:clamp(42px,7vw,65px);line-height:.97;margin:18px 0;font-style:italic;letter-spacing:-3px}.panel h1 span{color:#ffd06b}.panel p{color:#c8dfe4;line-height:1.7;font-size:14px}.keys{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0;color:#d4e7e9;font-size:12px}.keys strong{display:block;color:white;font-size:14px}.primary{border:0;background:#ffd06b;color:#122d38;padding:15px 25px;border-radius:12px;font-weight:850;font-size:16px}.secondary{background:transparent;border:1px solid #ffffff50;color:white;padding:14px 18px;border-radius:12px;margin-left:8px}.small{font-size:11px!important;color:#8cb4c0!important}#touch{display:none;position:absolute;bottom:100px;left:15px;right:15px;justify-content:space-between;pointer-events:none}#touch .group{display:flex;gap:10px}#touch button{pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none;border:1px solid #ffffff66;background:#153d4dbb;color:#fff;border-radius:16px;min-width:62px;height:65px;font-weight:850;font-size:23px}#touch button[data-key=boost]{font-size:13px;background:#e8b750d9;color:#152e37}#touch button[data-key=brake]{font-size:12px}#touch button.held{background:#fff;color:#13303a}@media(pointer:coarse){#touch{display:flex}}@media(max-width:650px){#hud{inset:14px 12px auto}.brand{font-size:13px;letter-spacing:1px}.tag{font-size:8px;letter-spacing:1px}.glass{padding:9px 11px}.metrics{gap:12px}.metric b{font-size:18px}.metric small{font-size:8px}#bestMetric{display:none}#speedBox{left:14px;bottom:20px}.speed{font-size:40px}#boostBox{right:14px;bottom:20px;width:130px}.panel{padding:24px}#toast{top:94px;font-size:13px}}@media(max-height:500px){.panel{padding:18px 25px}.panel h1{font-size:38px;margin:10px 0}.panel p{margin:7px 0}.keys{margin:12px 0}.small{display:none}#touch{bottom:78px}#touch button{height:48px;min-width:50px}#speedBox,#boostBox{bottom:12px}}
+</style>
+</head><body>
+<canvas id="track" aria-label="Mango Circuit racing track"></canvas>
+<div id="progress"></div>
+<header id="hud"><div class="glass"><div class="brand">MANGO <span>CIRCUIT</span></div><div class="tag">SUNSET COAST / ORIGINAL GAME</div></div><div class="glass metrics"><div class="metric"><small>LAP</small><b id="lap">1 / 3</b></div><div class="metric"><small>TIME</small><b id="time">0:00.00</b></div><div class="metric" id="bestMetric"><small>BEST LAP</small><b id="best">—</b></div><button id="pause" aria-label="Pause race">Ⅱ</button></div></header>
+<div id="toast" role="status" aria-live="polite"></div><div id="count"></div>
+<div id="speedBox" class="glass"><div class="speed" id="speed">0</div><div class="unit">KM/H</div></div>
+<div id="boostBox" class="glass"><div class="unit">SHIFT / BOOST <span id="boostValue">100%</span></div><div class="meter"><i id="boostMeter"></i></div></div>
+<div id="touch"><div class="group"><button data-key="left" aria-label="Steer left">←</button><button data-key="right" aria-label="Steer right">→</button></div><div class="group"><button data-key="brake" aria-label="Brake">BRAKE</button><button data-key="boost" aria-label="Boost">BOOST</button><button data-key="gas" aria-label="Accelerate">↑</button></div></div>
+<div id="overlay"><div class="panel"><div class="eyebrow">A MANGO ORIGINAL</div><h1 id="title">CHASE THE<br><span>GOLDEN HOUR.</span></h1><p id="description">Three laps. One coastal circuit. Chase a clean racing line through sweeping bends and rolling hills. Stay on the asphalt and save your boost for the straights.</p><div class="keys" id="instructions"><div><strong>WASD / Arrow keys</strong>Accelerate, brake, and steer</div><div><strong>Shift / Space</strong>Hold to boost</div><div><strong>P / Escape</strong>Pause and resume</div><div><strong>R</strong>Restart the race</div></div><button class="primary" id="start">Race now →</button><button class="secondary" id="restart" hidden>Restart</button><p class="small">Touch controls appear on phones and tablets. Best lap saves on this device. No downloads or accounts needed.</p></div></div>
+<script>
+(() => {
+'use strict';
+const $=id=>document.getElementById(id),canvas=$('track'),ctx=canvas.getContext('2d');
+if(!ctx){$('description').textContent='This browser cannot draw the game. Try an updated browser.';$('start').disabled=true;return;}
+const SEG=200,N=900,LENGTH=N*SEG,ROAD=1800,CAM_HEIGHT=1050,DEPTH=.84,PLAYER_Z=CAM_HEIGHT*DEPTH,DRAW=190,MAX=6300;
+const colors={sky:'#87c9d7',haze:'#f3cb9d',road:'#30434d',road2:'#344952',sand:'#c79870',sand2:'#c4946c'};
+const segments=Array.from({length:N},(_,i)=>({i,z:i*SEG,y: Math.sin(i/N*Math.PI*4)*1450+Math.sin(i/N*Math.PI*10)*450,curve:Math.sin(i/N*Math.PI*6)*1.5+Math.sin(i/N*Math.PI*10)*.65}));
+let W=1,H=1,dpr=1,state='menu',distance=0,speed=0,playerX=0,boost=100,elapsed=0,lapStart=0,lap=1,best=Infinity,previous=0,countdown=0,steer=0,flash=0,toastTimer=0,lastOffroad=false,lastCheckpoint=-1;
+const keys={left:false,right:false,gas:false,brake:false,boost:false};
+try{const stored=Number(localStorage.getItem('mango-circuit-best-v1'));if(stored>0)best=stored;}catch{}
+const fmt=t=>`${Math.floor(t/60)}:${(t%60).toFixed(2).padStart(5,'0')}`;
+function resize(){W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+addEventListener('resize',resize);resize();
+function clearKeys(){for(const k in keys)keys[k]=false;document.querySelectorAll('#touch button').forEach(b=>b.classList.remove('held'));}
+function notice(text,seconds=2){$('toast').textContent=text;toastTimer=seconds;}
+function reset(){clearKeys();distance=0;speed=0;playerX=0;boost=100;elapsed=0;lapStart=0;lap=1;steer=0;lastCheckpoint=-1;lastOffroad=false;countdown=3;state='countdown';$('overlay').hidden=true;$('count').textContent='3';notice('SUNSET COAST · THREE LAPS',3);}
+function pause(){if(state==='race'||state==='countdown'){state=state==='race'?'paused':'paused-countdown';clearKeys();$('overlay').hidden=false;$('title').innerHTML='TAKE A<br><span>BREATHER.</span>';$('description').textContent='Your race is paused. Resume when you are ready.';$('instructions').hidden=true;$('start').textContent='Resume →';$('restart').hidden=false;}else if(state==='paused'||state==='paused-countdown'){state=state==='paused'?'race':'countdown';$('overlay').hidden=true;}}
+$('start').onclick=()=>{if(state==='paused'||state==='paused-countdown')pause();else reset();};$('restart').onclick=reset;$('pause').onclick=pause;
+const bindings={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'gas',KeyW:'gas',ArrowDown:'brake',KeyS:'brake',ShiftLeft:'boost',ShiftRight:'boost',Space:'boost'};
+addEventListener('keydown',e=>{if(bindings[e.code]){e.preventDefault();keys[bindings[e.code]]=true;}if(e.repeat)return;if(e.code==='KeyP'||e.code==='Escape')pause();if(e.code==='KeyR')reset();});
+addEventListener('keyup',e=>{if(bindings[e.code]){e.preventDefault();keys[bindings[e.code]]=false;}});
+for(const button of document.querySelectorAll('[data-key]')){const key=button.dataset.key;button.onpointerdown=e=>{e.preventDefault();button.setPointerCapture(e.pointerId);keys[key]=true;button.classList.add('held');};const release=()=>{keys[key]=false;button.classList.remove('held');};button.onpointerup=release;button.onpointercancel=release;button.onlostpointercapture=release;}
+addEventListener('blur',()=>{clearKeys();if(state==='race'||state==='countdown')pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){clearKeys();if(state==='race'||state==='countdown')pause();}});
+function finish(){state='finished';speed=0;clearKeys();$('overlay').hidden=false;$('title').innerHTML='COAST<br><span>CONQUERED.</span>';$('description').textContent=`Three laps finished in ${fmt(elapsed)}. Your best lap: ${fmt(best)}. Ready to chase a faster time?`;$('instructions').hidden=true;$('start').textContent='Race again →';$('restart').hidden=true;$('count').textContent='';}
+function update(dt){
+ if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').textContent='';}
+ flash=Math.max(0,flash-dt);if(state==='countdown'){countdown-=dt;$('count').textContent=countdown>0?String(Math.ceil(countdown)):'GO!';if(countdown<=0){state='race';flash=.65;}return;}
+ if(state!=='race')return;if(flash<=0)$('count').textContent='';elapsed+=dt;
+ const oldDistance=distance,boosting=keys.boost&&boost>0&&speed>500,limit=boosting?MAX*1.35:MAX;
+ speed+=((keys.gas?4200:-1400)-(keys.brake?8000:0)+(boosting?2600:0))*dt;speed=Math.max(0,Math.min(limit,speed));
+ boost=Math.max(0,Math.min(100,boost+(boosting?-30:13)*dt));
+ const segment=segments[Math.floor(((distance+PLAYER_Z)%LENGTH)/SEG)];
+ steer=(keys.right?1:0)-(keys.left?1:0);playerX+=steer*dt*(.6+1.8*speed/MAX)-segment.curve*dt*.68*(speed/MAX)**2;playerX=Math.max(-2.2,Math.min(2.2,playerX));
+ const offroad=Math.abs(playerX)>1.02;if(offroad){speed=Math.max(0,speed-7000*dt);if(!lastOffroad)notice('OFF ROAD · Get back on the asphalt',1.6);}lastOffroad=offroad;
+ distance+=speed*dt;
+ const completed=Math.floor(distance/LENGTH),before=Math.floor(oldDistance/LENGTH);
+ if(completed>before){const lapTime=elapsed-lapStart;lapStart=elapsed;if(lapTime<best){best=lapTime;try{localStorage.setItem('mango-circuit-best-v1',String(best));}catch{}}if(completed>=3){finish();return;}lap=completed+1;notice(`LAP ${lap} / 3 · Last lap ${fmt(lapTime)}`,3);}
+ const checkpoint=Math.floor(distance/(LENGTH/4));if(checkpoint!==lastCheckpoint){lastCheckpoint=checkpoint;if(checkpoint>0&&checkpoint%4!==0){boost=Math.min(100,boost+15);notice('CHECKPOINT · +15 BOOST',1.8);}}
+}
+function poly(points,fill){ctx.fillStyle=fill;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();}
+function project(x,y,z,camX,camY,camZ){const scale=DEPTH/Math.max(1,z-camZ);return {x:W/2+scale*(x-camX)*W/2,y:H/2-scale*(y-camY)*H/2,w:scale*ROAD*W/2,scale};}
+function quad(a,b,width,color){poly([[a.x-a.w*width,a.y],[a.x+a.w*width,a.y],[b.x+b.w*width,b.y],[b.x-b.w*width,b.y]],color);}
+function mountain(x,y,size,color){poly([[x-size,y+size*.4],[x-size*.34,y-size*.55],[x,y-size],[x+size*.35,y-size*.45],[x+size,y+size*.4]],color);poly([[x,y-size],[x+size*.35,y-size*.45],[x+size,y+size*.4],[x+size*.02,y+size*.4]],'#ffffff12');}
+function scenery(p,side,index){const scale=p.scale*W*.5,baseX=p.x+side*p.w*1.65,baseY=p.y,h=scale*(350+index%4*75),r=h*.55;if(h<2)return;
+ if(index%3===0){poly([[baseX-r,baseY],[baseX-r*.15,baseY-h],[baseX+r,baseY]],'#527b70');poly([[baseX,baseY-h*.91],[baseX+r,baseY],[baseX,baseY]],'#325d58');ctx.fillStyle='#6b6657';ctx.fillRect(baseX-h*.035,baseY-h*.16,h*.07,h*.18);}else{poly([[baseX-r,baseY],[baseX-r*.65,baseY-h*.65],[baseX+r*.12,baseY-h],[baseX+r*.8,baseY-h*.4],[baseX+r,baseY]],'#b87d5e');poly([[baseX+r*.12,baseY-h],[baseX+r*.8,baseY-h*.4],[baseX+r,baseY],[baseX,baseY]],'#996d58');}}
+function draw(){
+ ctx.clearRect(0,0,W,H);const sky=ctx.createLinearGradient(0,0,0,H*.65);sky.addColorStop(0,'#69aabb');sky.addColorStop(.7,'#b4d9d8');sky.addColorStop(1,'#ffe0ac');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ const horizon=H*.49;ctx.fillStyle='#ffe5a6';ctx.beginPath();ctx.arc(W*.76,H*.22,H*.075,0,Math.PI*2);ctx.fill();
+ for(let j=-1;j<8;j++)mountain(j*W*.2-playerX*12,horizon,W*.2,j%2?'#8cabac':'#a6bdbc');
+ ctx.fillStyle='#c79972';ctx.fillRect(0,horizon,W,H-horizon);
+ const cameraZ=distance%LENGTH,base=Math.floor(cameraZ/SEG),fraction=(cameraZ%SEG)/SEG;
+ const playerPos=(cameraZ+PLAYER_Z)%LENGTH,playerIndex=Math.floor(playerPos/SEG),t=(playerPos%SEG)/SEG;
+ const ground=segments[playerIndex].y+(segments[(playerIndex+1)%N].y-segments[playerIndex].y)*t,camY=ground+CAM_HEIGHT;
+ let x=0,dx=-segments[base].curve*fraction,clip=H;const visible=[];
+ for(let n=0;n<DRAW;n++){const segment=segments[(base+n)%N],next=segments[(base+n+1)%N],loop=base+n>=N,worldZ=segment.z+(loop?LENGTH:0),a=project(x,segment.y,worldZ,playerX*ROAD,camY,cameraZ),b=project(x+dx,next.y,worldZ+SEG,playerX*ROAD,camY,cameraZ);x+=dx;dx+=segment.curve;if(worldZ-cameraZ<20||b.y>=a.y||b.y>=clip)continue;visible.push({a,b,index:segment.i,clip});clip=Math.min(clip,b.y);}
+ for(let j=visible.length-1;j>=0;j--){const{a,b,index,clip:c}=visible[j];ctx.save();ctx.beginPath();ctx.rect(0,0,W,c);ctx.clip();const stripe=Math.floor(index/3)%2;poly([[0,a.y],[W,a.y],[W,b.y],[0,b.y]],stripe?colors.sand:colors.sand2);quad(a,b,1.13,stripe?'#e8d5b2':'#bf684b');quad(a,b,1,stripe?colors.road:colors.road2);
+ for(const side of[-1,1]){const lineA={...a,x:a.x+side*a.w*.95,w:a.w*.012},lineB={...b,x:b.x+side*b.w*.95,w:b.w*.012};quad(lineA,lineB,1,'#c9d6ce');}
+ if(stripe){for(const side of[-1,1]){const lineA={...a,x:a.x+side*a.w*.333,w:a.w*.009},lineB={...b,x:b.x+side*b.w*.333,w:b.w*.009};quad(lineA,lineB,1,'#92a9a6');}}
+ if(index<3||index%225<2){const parts=14;for(let k=0;k<parts;k++)if((k+index)%2===0)poly([[a.x-a.w+2*a.w*k/parts,a.y],[a.x-a.w+2*a.w*(k+1)/parts,a.y],[b.x-b.w+2*b.w*(k+1)/parts,b.y],[b.x-b.w+2*b.w*k/parts,b.y]],'#fff1c7');}
+ if(index%9===0){scenery(a,-1,index);scenery(a,1,index+5);}ctx.restore();}
+ drawCar();
+ $('lap').textContent=`${lap} / 3`;$('time').textContent=fmt(elapsed);$('best').textContent=Number.isFinite(best)?fmt(best):'—';$('speed').textContent=Math.round(speed/MAX*220);$('boostValue').textContent=Math.round(boost)+'%';$('boostMeter').style.width=boost+'%';$('progress').style.width=(distance/LENGTH%1)*100+'%';
+}
+function drawCar(){const size=Math.min(W*.16,H*.27),x=W/2+steer*size*.08,y=H*.84+Math.sin(distance/130)*Math.min(2,speed/2000),w=size,h=size*.7;ctx.save();ctx.translate(x,y);ctx.rotate(-steer*.035);ctx.fillStyle='#10262b55';ctx.beginPath();ctx.ellipse(0,5,w*.69,h*.18,0,0,Math.PI*2);ctx.fill();
+ if(keys.boost&&boost>0&&state==='race'&&speed>500){for(const side of[-1,1])poly([[side*w*.28-w*.06,0],[side*w*.28+w*.06,0],[side*w*.28,h*(.6+Math.random()*.4)]],'#83e8e4');}
+ for(const side of[-1,1]){ctx.fillStyle='#15232b';ctx.fillRect(side*w*.46-w*.1,-h*.48,w*.2,h*.52);}
+ poly([[-w*.5,0],[-w*.43,-h*.5],[-w*.28,-h], [w*.28,-h],[w*.43,-h*.5],[w*.5,0]],'#f6bd50');poly([[-w*.28,-h],[0,-h*1.08],[w*.28,-h],[w*.38,-h*.55],[-w*.38,-h*.55]],'#ffe097');poly([[-w*.25,-h*.91],[w*.25,-h*.91],[w*.34,-h*.58],[-w*.34,-h*.58]],'#174854');poly([[-w*.31,-h*.87],[0,-h*.97],[w*.1,-h*.61],[-w*.34,-h*.58]],'#78b9ba');poly([[-w*.5,0],[-w*.43,-h*.5],[0,-h*.4],[0,0]],'#d69835');poly([[0,0],[0,-h*.4],[w*.43,-h*.5],[w*.5,0]],'#e6a841');ctx.fillStyle='#1e3c43';ctx.fillRect(-w*.49,-h*.12,w*.98,h*.13);ctx.fillStyle='#ff7262';ctx.fillRect(-w*.4,-h*.31,w*.23,h*.1);ctx.fillRect(w*.17,-h*.31,w*.23,h*.1);ctx.fillStyle='#112b34';ctx.fillRect(-w*.18,-h*.24,w*.36,h*.12);ctx.fillStyle='#ffe8ad';ctx.fillRect(-w*.1,-h*.22,w*.2,h*.07);ctx.restore();}
+function frame(now){const dt=Math.min(.04,(now-previous)/1000||0);previous=now;if(!document.hidden){update(dt);draw();}requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+})();
+</script></body></html>
