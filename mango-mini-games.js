@@ -91,7 +91,7 @@
     card('playMangoGolf','Mini Golf','⛳','Five playable putting holes with walls, aiming, physics, and stroke scoring.',golf);
     card('playMangoMines','Minesweeper','💣','Classic 9×9 Minesweeper with 10 mines, flags, and safe first click.',mines);
     const close=document.getElementById('mangoCloseGame');if(close)close.addEventListener('click',()=>{cleanup();host.hidden=true;frame.hidden=false;const a=document.getElementById('mangoOpenGame');if(a)a.hidden=false;});
-    new MutationObserver(()=>{if(player.hidden || document.getElementById('games')?.hidden){cleanup();host.hidden=true;frame.hidden=false;const a=document.getElementById('mangoOpenGame');if(a)a.hidden=false;}}).observe(document.getElementById('games'),{attributes:true,subtree:true,attributeFilter:['hidden']});
+    const visibilityObserver=new MutationObserver(()=>{if(player.hidden || document.getElementById('games')?.hidden){cleanup();host.hidden=true;frame.hidden=false;const a=document.getElementById('mangoOpenGame');if(a)a.hidden=false;}});visibilityObserver.observe(document.getElementById('games'),{attributes:true,attributeFilter:['hidden']});visibilityObserver.observe(player,{attributes:true,attributeFilter:['hidden']});
     const originalButtons=grid.querySelectorAll('button:not(#playMangoGolf):not(#playMangoMines), a');originalButtons.forEach(b=>b.addEventListener('click',()=>{cleanup();host.hidden=true;frame.hidden=false;const a=document.getElementById('mangoOpenGame');if(a)a.hidden=false;}));
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
