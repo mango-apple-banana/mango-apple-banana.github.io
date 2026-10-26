@@ -32,6 +32,7 @@
     <h1>🎮 Mango Games</h1>
     <p class="muted">Choose a game. These games are best played on a computer with a keyboard and mouse.</p>
     <div class="mango-game-grid">
+      <article class="mango-game-card"><div class="mango-game-art" aria-hidden="true">🕷️</div><h2>Stickman Hook</h2><p>Swing from hook to hook and reach the finish!</p><button id="playStickmanHook" class="primary">▶ Play Stickman Hook</button></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#f3a649,#3f627d)" aria-hidden="true">🏍️</div><h2>Moto X3M</h2><p>Open your Moto X3M page inside Mango.</p><a href="moto-x3m.html" id="playMoto" class="mango-game-link">🏍️ Play Moto X3M</a></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#39b779,#123c36)" aria-hidden="true">🟩</div><h2>Paper.io</h2><p>Capture territory and protect your trail. Arrow keys on a computer or swipe on mobile.</p><button id="playPaper" class="primary">Play Paper.io</button></article>
       <article class="mango-game-card"><div class="mango-game-art racing" aria-hidden="true">🏎️</div><h2>Smash Karts</h2><p>Open your Smash Karts page inside Mango.</p><a href="smash-karts.html" id="playSmashKarts" class="mango-game-link">🏎️ Play Smash Karts</a></article>
@@ -84,6 +85,7 @@
   $('playSmashKarts').onclick = event => {event.preventDefault();play('Smash Karts','./smash-karts.html');};
   $('playPaper').onclick = () => play('Paper.io','https://bodhiprotocol.github.io/paper-io/');
   $('playMoto').onclick = event => {event.preventDefault();play('Moto X3M','./moto-x3m.html');};
+  $('playStickmanHook').onclick = () => play('Stickman Hook','https://www.bubbleshooter.net/embed.php?id=1197');
   $('playKartArena').onclick = () => play('Mango Kart Training Ground','./mango-kart-arena.html?v=training-3');
   $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=smooth-10');
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
