@@ -2287,5 +2287,50 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<!-- Original Soccer Physics for Mango -->
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  const grid = document.querySelector(".mango-game-grid");
+
+  if (!grid || document.getElementById("playSoccerPhysics"))
+    return;
+
+  const url = "https://www.miniplay.com/embed/soccer-physics";
+
+  const card = document.createElement("article");
+  card.className = "mango-game-card";
+
+  card.innerHTML = `
+    <div class="mango-game-art">⚽</div>
+    <h2>Soccer Physics (Original)</h2>
+    <p>Funny two-player soccer with crazy physics!</p>
+    <button id="playSoccerPhysics" class="primary">
+      ▶ Play Soccer Physics
+    </button>
+  `;
+
+  grid.appendChild(card);
+
+  document.getElementById("playSoccerPhysics").onclick = () => {
+    const player = document.getElementById("mangoPlayer");
+    const frame = document.getElementById("mangoGameFrame");
+
+    document.getElementById("mangoGameTitle")
+      .textContent = "Soccer Physics";
+
+    document.getElementById("mangoOpenGame").href = url;
+
+    document.getElementById("mangoGameStatus")
+      .textContent = "Loading Soccer Physics...";
+
+    frame.src = url;
+    frame.title = "Soccer Physics";
+    player.hidden = false;
+
+    player.scrollIntoView({ behavior: "smooth" });
+  };
+});
+</script>
+
 </body>
 </html>
