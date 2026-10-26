@@ -2246,5 +2246,46 @@ try {
 }
 </script>
 
+<!-- Basket Random inside Mango -->
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  const grid = document.querySelector(".mango-game-grid");
+  if (!grid || document.getElementById("playBasketRandom")) return;
+
+  const card = document.createElement("article");
+  card.className = "mango-game-card";
+
+  card.innerHTML = `
+    <div class="mango-game-art">🏀</div>
+    <h2>Basket Random (Original)</h2>
+    <p>Play basketball against the computer or a friend!</p>
+    <button id="playBasketRandom" class="primary">
+      ▶ Play Basket Random
+    </button>
+  `;
+
+  grid.appendChild(card);
+
+  document.getElementById("playBasketRandom").onclick = () => {
+    const url = "https://www.randombasketball.com/";
+    const player = document.getElementById("mangoPlayer");
+    const frame = document.getElementById("mangoGameFrame");
+
+    document.getElementById("mangoGameTitle").textContent =
+      "Basket Random";
+
+    document.getElementById("mangoOpenGame").href = url;
+    document.getElementById("mangoGameStatus").textContent =
+      "Loading Basket Random...";
+
+    frame.src = url;
+    frame.title = "Basket Random";
+    player.hidden = false;
+
+    player.scrollIntoView({ behavior: "smooth" });
+  };
+});
+</script>
+
 </body>
 </html>
