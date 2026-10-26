@@ -1079,6 +1079,20 @@ $("newChat").onclick = () => {
   renderAI();
 };
 
+// Keep recent turns without repeatedly processing an unbounded transcript.
+function fastHistory(messages) {
+  const recent = [];
+  let budget = 6000;
+  for (const message of messages.slice(-6).reverse()) {
+    if (message.content.length > budget) break;
+    recent.unshift({role: message.role, content: message.content});
+    budget -= message.content.length;
+  }
+  // Start at a user turn so the local model receives valid chat history.
+  while (recent.length && recent[0].role !== "user") recent.shift();
+  return recent;
+}
+
 async function startAI(retry = false) {
   if (!me || loading || engine || deleting || (aiLoadFailed && !retry)) return;
 
@@ -1141,7 +1155,7 @@ $("aiForm").onsubmit = async event => {
       role: "system",
       content: responder.prompt
     },
-    ...chat.messages.slice(-6).map(({role, content}) => ({role, content})),
+    ...fastHistory(chat.messages),
     { role: "user", content: text }
   ];
 
@@ -1157,15 +1171,33 @@ $("aiForm").onsubmit = async event => {
   $("aiStatus").textContent = responder.name + " is answering…";
 
   try {
-    const result = await engine.chat.completions.create({
+    const chunks = await engine.chat.completions.create({
       messages,
-      max_tokens: 384,
+      stream: true,
+      max_tokens: /\b(detail(?:ed)?|thorough|whole code|full code|step.by.step)\b/i.test(text) ? 768 : 256,
       temperature: .7
     });
 
-    if (me?.uid !== uid) return;
+    let answer = "";
+    let lastPaint = 0;
+    for await (const chunk of chunks) {
+      if (me?.uid !== uid) {
+        engine.interruptGenerate();
+        return;
+      }
+      answer += chunk.choices[0]?.delta?.content || "";
+      // Paint at most 25 times a second to keep typing and scrolling responsive.
+      const now = performance.now();
+      if (answer && now - lastPaint >= 40) {
+        const follow = $("aiMessages").scrollHeight -
+          $("aiMessages").scrollTop - $("aiMessages").clientHeight < 100;
+        output.textContent = answer;
+        if (follow) $("aiMessages").scrollTop = $("aiMessages").scrollHeight;
+        lastPaint = now;
+      }
+    }
 
-    const answer = result.choices[0]?.message?.content;
+    if (me?.uid !== uid) return;
     if (!answer) throw Error("Empty reply. Try again.");
 
     if (!chat.messages.length) {
@@ -2176,14 +2208,14 @@ try {
         ? "Ready!"
         : loading
           ? "Starting Mango AI automatically…"
-          : "Mango AI starts automatically when you open the AI tab. " +
+          : "Mango AI starts loading automatically after sign-in. " +
           "The first download is several hundred MB. " +
           "A WebGPU-compatible browser and supported graphics hardware " +
           "are required.";
 
     requiredFields();
     controls();
-    if (me && tab === "ai") startAI();
+    if (me && !deleting && (tab === "ai" || tab === "home")) startAI();
 
     if (me && !deleting) {
       const uid = me.uid;
