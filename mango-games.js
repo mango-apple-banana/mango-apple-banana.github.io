@@ -33,7 +33,7 @@
     <p class="muted">Choose a game. These games are best played on a computer with a keyboard and mouse.</p>
     <div class="mango-game-grid">
       <article class="mango-game-card"><div class="mango-game-art racing" aria-hidden="true">🏎️</div><h2>Smash Karts</h2><p>Open your Smash Karts page inside Mango.</p><a href="smash-karts.html" id="playSmashKarts" class="mango-game-link">🏎️ Play Smash Karts</a></article>
-      <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#58b7b1,#efad69)" aria-hidden="true">🚀</div><h2>Mango Kart Arena</h2><p>Battle five computer-controlled karts in a 3D arena. Collect rockets, a blaster, mines, and shields. Most knockouts in three minutes wins.</p><button id="playKartArena" class="primary">Play Kart Arena</button><p class="small">Single player · CPU opponents · Keyboard and touch controls</p></article>
+      <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#58b7b1,#efad69)" aria-hidden="true">🚀</div><h2>Mango Kart Training Ground</h2><p>Battle five computer-controlled karts in a 3D arena. Collect rockets, a blaster, mines, and shields. Most knockouts in three minutes wins.</p><button id="playKartArena" class="primary">Play Training Ground</button><p class="small">Single player · CPU opponents · Keyboard and touch controls</p></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#215260,#e7ac56)" aria-hidden="true">🏝️</div><h2>Mango Circuit</h2><p>A Mango original. Race fourteen original 3D courses with underground tunnels, mountain climbs, steep descents, loops, wall rides, barriers, and best-run ghosts. Low racing car, responsive steering, instant restarts, and keyboard or touch controls.</p><button id="playCircuit" class="primary">Play Mango Circuit</button><p class="small">Original game · Plays right here</p></article>
       <article class="mango-game-card"><div class="mango-game-art">🎯</div><h2>Void Runner</h2><p>Survive waves in a neon 3D arena. Move with WASD, aim with your mouse, and click to fire.</p><button id="playVoid" class="primary">Play Void Runner</button></article>
       <article class="mango-game-card"><div class="mango-game-art racing">🏎️</div><h2>PMNDRS Racing</h2><p>Drive a 3D car around a desert track. Use WASD or arrow keys, Shift for boost, and R to reset.</p><button id="playRacing" class="primary">Play Racing</button></article>
@@ -43,7 +43,7 @@
       <p id="mangoGameStatus" role="status"></p>
       <iframe id="mangoGameFrame" title="Mango game player" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
     </div>
-    <p class="small">Mango Kart Arena and Mango Circuit are original games made for Mango. Void Runner and Racing run from their creators’ websites inside Mango. <a href="https://github.com/mheerspink75/void-runner" target="_blank" rel="noopener noreferrer">Void Runner source / MIT license</a> · <a href="https://github.com/pmndrs/racing-game" target="_blank" rel="noopener noreferrer">Racing source / licenses</a></p>
+    <p class="small">Mango Kart Training Ground and Mango Circuit are original games made for Mango. Void Runner and Racing run from their creators’ websites inside Mango. <a href="https://github.com/mheerspink75/void-runner" target="_blank" rel="noopener noreferrer">Void Runner source / MIT license</a> · <a href="https://github.com/pmndrs/racing-game" target="_blank" rel="noopener noreferrer">Racing source / licenses</a></p>
   `;
   document.querySelector('header').after(page);
   const $ = id => document.getElementById(id);
@@ -75,12 +75,12 @@
     $('mangoOpenGame').href = path;
     $('mangoGameFrame').title = title;
     $('mangoPlayer').hidden = false;
-    $('mangoGameStatus').textContent = title === 'Mango Kart Arena' ? 'Kart battles with five CPU opponents. WASD / arrows drive · Space fires · Shift boosts · P pauses. Click inside the game to focus the controls.' : 'Click inside the game to give it keyboard focus. If mouse capture or fullscreen is blocked, use Open game separately. Press Esc to release the mouse.';
+    $('mangoGameStatus').textContent = title === 'Mango Kart Training Ground' ? 'Kart battles with five CPU opponents. WASD / arrows drive · Space fires · Shift boosts · P pauses. Click inside the game to focus the controls.' : 'Click inside the game to give it keyboard focus. If mouse capture or fullscreen is blocked, use Open game separately. Press Esc to release the mouse.';
     $('mangoGameFrame').src = path;
     $('mangoPlayer').scrollIntoView({behavior:'smooth',block:'start'});
   }
   $('playSmashKarts').onclick = event => {event.preventDefault();play('Smash Karts','./smash-karts.html');};
-  $('playKartArena').onclick = () => play('Mango Kart Arena','./mango-kart-arena.html?v=arena-2');
+  $('playKartArena').onclick = () => play('Mango Kart Training Ground','./mango-kart-arena.html?v=training-3');
   $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=smooth-10');
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
   $('playRacing').onclick = () => play('PMNDRS Racing','https://racing.pmnd.rs/');
