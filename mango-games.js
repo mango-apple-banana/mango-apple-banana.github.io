@@ -36,7 +36,7 @@
       <article class="mango-game-card"><div class="mango-game-art" aria-hidden="true">🕷️</div><h2>Stickman Hook</h2><p>Swing from hook to hook and reach the finish!</p><button id="playStickmanHook" class="primary">▶ Play Stickman Hook</button></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#f3a649,#3f627d)" aria-hidden="true">🏍️</div><h2>Moto X3M</h2><p>Open your Moto X3M page inside Mango.</p><a href="moto-x3m.html" id="playMoto" class="mango-game-link">🏍️ Play Moto X3M</a></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#39b779,#123c36)" aria-hidden="true">🟩</div><h2>Paper.io</h2><p>Capture territory and protect your trail. Arrow keys on a computer or swipe on mobile.</p><button id="playPaper" class="primary">Play Paper.io</button></article>
-      <article class="mango-game-card"><div class="mango-game-art racing" aria-hidden="true">🏎️</div><h2>Smash Karts</h2><p>Open your Smash Karts page inside Mango.</p><a href="smash-karts.html" id="playSmashKarts" class="mango-game-link">🏎️ Play Smash Karts</a></article>
+      <article class="mango-game-card"><div class="mango-game-art racing" aria-hidden="true">🏎️</div><h2>Smash Karts</h2><p>Open your Smash Karts page inside Mango.</p><a href="smash-karts.html?v=official-2" id="playSmashKarts" class="mango-game-link">🏎️ Play Smash Karts</a></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#58b7b1,#efad69)" aria-hidden="true">🚀</div><h2>Mango Kart Training Ground</h2><p>Battle five computer-controlled karts in a 3D arena. Collect rockets, a blaster, mines, and shields. Most knockouts in three minutes wins.</p><button id="playKartArena" class="primary">Play Training Ground</button><p class="small">Single player · CPU opponents · Keyboard and touch controls</p></article>
       <article class="mango-game-card"><div class="mango-game-art" style="background:linear-gradient(135deg,#215260,#e7ac56)" aria-hidden="true">🏝️</div><h2>Mango Circuit</h2><p>A Mango original. Race fourteen original 3D courses with underground tunnels, mountain climbs, steep descents, loops, wall rides, barriers, and best-run ghosts. Low racing car, responsive steering, instant restarts, and keyboard or touch controls.</p><button id="playCircuit" class="primary">Play Mango Circuit</button><p class="small">Original game · Plays right here</p></article>
       <article class="mango-game-card"><div class="mango-game-art">🎯</div><h2>Void Runner</h2><p>Survive waves in a neon 3D arena. Move with WASD, aim with your mouse, and click to fire.</p><button id="playVoid" class="primary">Play Void Runner</button></article>
@@ -83,7 +83,7 @@
     $('mangoGameFrame').src = path;
     $('mangoPlayer').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  $('playSmashKarts').onclick = event => {event.preventDefault();play('Smash Karts','./smash-karts.html');};
+  $('playSmashKarts').onclick = event => {event.preventDefault();play('Smash Karts','./smash-karts.html?v=official-2');};
   $('playPaper').onclick = () => play('Paper.io','https://bodhiprotocol.github.io/paper-io/');
   $('playMoto').onclick = event => {event.preventDefault();play('Moto X3M','./moto-x3m.html');};
   $('playStickmanHook').onclick = () => play('Stickman Hook','https://www.bubbleshooter.net/embed.php?id=1197');
