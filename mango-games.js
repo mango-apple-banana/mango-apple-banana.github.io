@@ -87,7 +87,7 @@
   $('playPaper').onclick = () => play('Paper.io','https://bodhiprotocol.github.io/paper-io/');
   $('playMoto').onclick = event => {event.preventDefault();play('Moto X3M','./moto-x3m.html');};
   $('playStickmanHook').onclick = () => play('Stickman Hook','https://www.bubbleshooter.net/embed.php?id=1197');
-  $('playRealArchers').onclick = () => play('Ragdoll Archers','https://www.bubbleshooter.net/embed.php?id=2320');
+  $('playRealArchers').onclick = () => play('Ragdoll Archers','https://funny-school.github.io/game/ragdollarchers/');
   $('playKartArena').onclick = () => play('Mango Kart Training Ground','./mango-kart-arena.html?v=training-3');
   $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=smooth-10');
   // Ragdoll Hit uses the user-provided hosted game address.
