@@ -90,6 +90,16 @@
   $('playRealArchers').onclick = () => play('Ragdoll Archers','https://www.bubbleshooter.net/embed.php?id=2320');
   $('playKartArena').onclick = () => play('Mango Kart Training Ground','./mango-kart-arena.html?v=training-3');
   $('playCircuit').onclick = () => play('Mango Circuit','./mango-circuit.html?v=smooth-10');
+  // Ragdoll Hit uses the user-provided hosted game address.
+  if (!document.getElementById("mangoRagdollHit")) {
+    const card = document.createElement("article");
+    card.className = "mango-game-card";
+    card.innerHTML = '<div class="mango-game-art">🥊</div><h2>Ragdoll Hit</h2><p>Physics fighting game</p><button id="mangoRagdollHit" class="primary">▶ Play Ragdoll Hit</button>';
+    page.querySelector(".mango-game-grid").appendChild(card);
+    document.getElementById("mangoRagdollHit").onclick = () => {
+      play("Ragdoll Hit", "https://shooryan.github.io/tautology/?id=44");
+    };
+  }
   $('playVoid').onclick = () => play('Void Runner','https://mheerspink75.github.io/void-runner/');
   $('playRacing').onclick = () => play('PMNDRS Racing','https://racing.pmnd.rs/');
   $('mangoCloseGame').onclick = closeGame;
